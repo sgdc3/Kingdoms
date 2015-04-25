@@ -14,6 +14,7 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -55,7 +56,7 @@ public class Kingdoms extends JavaPlugin implements Listener{
 		pm.registerEvents(new KingdomPowerups(this), this);
 		pm.registerEvents(new NexusBlockManager(this), this);
 		getConfig().options().copyDefaults(true);
-		saveConfig();
+		saveDefaultConfig();
 		this.kingdoms.options().copyDefaults(false);
 		saveKingdoms();
 		this.land.options().copyDefaults(false);
@@ -104,14 +105,15 @@ public class Kingdoms extends JavaPlugin implements Listener{
 		if(cmd.getName().equalsIgnoreCase("k") ||
 				cmd.getName().equalsIgnoreCase("kingdom")||
 				cmd.getName().equalsIgnoreCase("kingdoms")){
-			
+			if(isValidWorld(p.getWorld())){
 			
 			if(args.length <= 0){
 				p.sendMessage(ChatColor.LIGHT_PURPLE + "===Kingdoms Commands===");
 				p.sendMessage(ChatColor.LIGHT_PURPLE + "/k " + ChatColor.AQUA + "shows all commands");
 				p.sendMessage(ChatColor.LIGHT_PURPLE + "/k nexus" + ChatColor.AQUA + "changes a block into your kingdom's nexus block");
 				p.sendMessage(ChatColor.LIGHT_PURPLE + "/k info " + ChatColor.AQUA + "shows how Kingdoms work");
-				p.sendMessage(ChatColor.LIGHT_PURPLE + "/k join " + ChatColor.AQUA + "joins a Kingdom. Must b invited");
+				p.sendMessage(ChatColor.LIGHT_PURPLE + "/k join " + ChatColor.AQUA + "joins a Kingdom. Must be invited");
+				p.sendMessage(ChatColor.LIGHT_PURPLE + "/k leave " + ChatColor.AQUA + "leaves your Kingdom.");
 				p.sendMessage(ChatColor.LIGHT_PURPLE + "/k create [kingdom name] " + ChatColor.AQUA + "creates a kingdom");
 				p.sendMessage(ChatColor.LIGHT_PURPLE + "/k claim " + ChatColor.AQUA + "claims a patch of land for your kingdom");
 				p.sendMessage(ChatColor.LIGHT_PURPLE + "/k unclaim " + ChatColor.AQUA + "unclaims a patch of land from your kingdom");
@@ -152,7 +154,7 @@ public class Kingdoms extends JavaPlugin implements Listener{
 				p.sendMessage(ChatColor.GREEN + "Allies can be made with /k ally [kingdom]. Allies can donate"
 						+ " to each other's nexuses and cannot damage each other.");
 				
-				p.sendMessage(ChatColor.GRAY + "Can't trust another kingdom as an ally? Want to remove an enemy from you"
+				p.sendMessage(ChatColor.GRAY + "Can't trust another kingdom as an ally? Want to remove an enemy from your"
 						+ " blacklist? Do /k neutral [kingdom]. This will remove a kingdom from your ally list or enemy list.");
 				
 				p.sendMessage(ChatColor.RED + "Enemies can be made with /k enemy [kingdom]. Doing so will mark a kingdom as"
@@ -165,13 +167,12 @@ public class Kingdoms extends JavaPlugin implements Listener{
 				p.sendMessage(ChatColor.AQUA + "The members of your kingdom show the number of players in your kingdom. "
 						+ "Players can help to collect your resources, build, open chests, furnaces and other amenities. Players can be "
 						+ "invited to your kingdom with /k invite [playername] "
-						+ "be careful who you invite as enemies in your kingdom can do a lot of internal damage.");
+						+ "be careful who you invite as spies in your kingdom can do a lot of internal damage.");
 				
 				p.sendMessage(ChatColor.RED + "To claim another kingdom's land, you will have to duel with their champion with"
-						+ " /k invade. If you win, you can claim the land. If you lose, the champion will gain your items and your enemy "
-						+ "can take it from their nexus block. Your champion's strength can be upgraded in the nexus block. "
+						+ " /k invade. If you win, you can claim the land. If you lose, you leave empty-handed. Your champion's strength can be upgraded in the nexus block. "
 						+ "When you are online, you can fight your opponent with your champion in an event of an invasion. Your champion "
-						+ "will gain better abilities, depending on the number of players fighting him.");
+						+ "will gain better stats, depending on the number of players fighting him.");
 
 			
 			
@@ -225,8 +226,12 @@ public class Kingdoms extends JavaPlugin implements Listener{
 			}
 			}else if(args[0].equalsIgnoreCase("unclaim")){
 				if(hasKingdom(p)){
-		             if(isMod(getKingdom(p), p) || isKing(p)){				
+		             if(isMod(getKingdom(p), p) || isKing(p)){			
+		            	 if(!this.isNexusChunk(p.getLocation().getChunk())){
 						unclaimCurrentPosition(p);
+		             }else{
+		            	 p.sendMessage(ChatColor.RED + "You can't unclaim your nexus land! You must move your nexus with /k nexus before claiming this patch of land!");
+		             }
 					}else{
 						p.sendMessage(ChatColor.RED + "Your rank is too low to claim land!");
 					}
@@ -236,14 +241,31 @@ public class Kingdoms extends JavaPlugin implements Listener{
 					}else if(args[0].equalsIgnoreCase("show")){
 				if(args.length == 1){
 					if(hasKingdom(p)){
+						
+				String allies = "";
+				String tallies = "";
+				String enemies = "";
+				String tenemies = "";
+				
+				for(String s:kingdoms.getStringList(getKingdom(p) + ".enemies")){
+					tenemies = enemies;
+					enemies = tenemies +" " + s;
+				}
+				for(String s:kingdoms.getStringList(getKingdom(p) + ".allies")){
+					tallies = allies;
+					allies = tallies +" " + s;
+				}
+						
 				p.sendMessage(ChatColor.AQUA + "=-=-=-=-=--==[" +getKingdom(p)+ "]==--=-=-=-=-=");
 				p.sendMessage(ChatColor.AQUA + "| King: " + Bukkit.getPlayer((UUID.fromString(kingdoms.getString(getKingdom(p) + ".king")))).getName());
 				p.sendMessage(ChatColor.AQUA + "| Might: " + kingdoms.getInt(getKingdom(p) + ".might"));
+				p.sendMessage(ChatColor.AQUA + "|" + " Allies:" + ChatColor.GREEN + allies);
+				p.sendMessage(ChatColor.AQUA + "|" + " Enemies:" + ChatColor.RED + enemies);
 				p.sendMessage(ChatColor.AQUA + "|");
 				p.sendMessage(ChatColor.AQUA + "|     " + ChatColor.UNDERLINE +"Members" );
 				p.sendMessage(ChatColor.AQUA + "|");
 				p.sendMessage(ChatColor.AQUA + "|" + ChatColor.GREEN + " Online" + ChatColor.WHITE + " | " + ChatColor.RED + "Offline");
-			
+			    
 				
 				String kping = "";
 				
@@ -819,9 +841,14 @@ public class Kingdoms extends JavaPlugin implements Listener{
 			}else if(args[0].equalsIgnoreCase("invade")){
 			invadeCurrentPosition(p);
 				
+			}else{
+				p.performCommand("k");
+				p.sendMessage(ChatColor.RED + "[Kingdoms] Unknown command.");
 			}
 			
-			
+		}else{
+			p.sendMessage(ChatColor.RED + "Kingdoms is disabled in this world.");
+		}
 		}
 
 	}else{
@@ -832,7 +859,13 @@ public class Kingdoms extends JavaPlugin implements Listener{
 	}
 	
 	
-	
+	public boolean isValidWorld(World world){
+		if(getConfig().getStringList("enabled-worlds").contains(world.getName())){
+			return true;
+		}else{
+			return false;
+		}
+	}
 	
 	
 	@EventHandler
@@ -875,6 +908,46 @@ public class Kingdoms extends JavaPlugin implements Listener{
 			p.sendMessage(ChatColor.RED + "Nexus placing cancelled.");
 		}
 		}
+
+	}
+	
+	@EventHandler
+	public void onEntityAttack(EntityDamageByEntityEvent event){
+		if(isValidWorld(event.getEntity().getWorld())){
+		if(event.getEntity() instanceof Player){
+			Player p = (Player) event.getEntity();
+			if(event.getDamager() instanceof Player){
+				Player damager = (Player) event.getDamager();
+				
+				if(hasKingdom(p)){
+					if(getChunkKingdom(p.getLocation().getChunk()).equals(getKingdom(p))){
+						if(!isEnemy(getKingdom(p),damager)){
+							
+							event.setCancelled(true);
+							damager.sendMessage(ChatColor.RED + "You can't harm members of " + getKingdom(p) + " in their own territory unless your kingdom is an enemy!");
+							return;
+						}
+					}
+					
+					if(hasKingdom(damager)){
+						if(getKingdom(damager).equals(getKingdom(p))){
+							event.setCancelled(true);
+							damager.sendMessage(ChatColor.RED + "You can't damage your kingdom members!");
+							return;
+						}
+					}
+					
+					if(isAlly(getKingdom(p), damager)){
+						event.setCancelled(true);
+						damager.sendMessage(ChatColor.RED + "You can't damage your allies!");
+						return;
+					}
+					
+				}
+				
+			}
+		}
+	}
 	}
 	
 	@EventHandler
@@ -887,7 +960,7 @@ public class Kingdoms extends JavaPlugin implements Listener{
 			}
 		}
 		
-
+	
 	}
 	
 	@EventHandler
@@ -957,12 +1030,10 @@ public class Kingdoms extends JavaPlugin implements Listener{
 			}
 		}
 		}
+		
 	}
 	
-	
-	public ArrayList<String> getMembers(String kingdom){
-		return (ArrayList<String>) kingdoms.getStringList(kingdom + ".members");
-	}
+
 	
 	
 	public void newKingdom(UUID king, String tag){
@@ -1298,14 +1369,39 @@ public class Kingdoms extends JavaPlugin implements Listener{
 		saveKingdoms();
 	}
 	
+	public boolean isKAlly(String kingdom, String ally){
+		boolean boo = false;
+			if(kingdoms.getStringList(kingdom + ".allies").contains(ally)){
+				boo = true;
+			}else{
+				boo = false;
+			
+	}
+	
+		
+		return boo;
+	}
+	
+	public boolean isKEnemy(String kingdom, String enemy){
+		boolean boo = false;
+		if(kingdoms.getStringList(kingdom + ".enemies").contains(enemy)){
+			boo = true;
+		}else{
+			boo = false;
+		}
+		
+		return boo;
+	}
+	
 	public boolean isAlly(String kingdom, OfflinePlayer p){
 		boolean boo = false;
+		if(hasKingdom(p)){
 			if(kingdoms.getStringList(kingdom + ".allies").contains(getKingdom(p))){
 				boo = true;
 			}else{
 				boo = false;
 			}
-
+	}
 	
 		
 		return boo;
@@ -1313,12 +1409,13 @@ public class Kingdoms extends JavaPlugin implements Listener{
 	
 	public boolean isEnemy(String kingdom, OfflinePlayer p){
 		boolean boo = false;
+		if(hasKingdom(p)){
 		if(kingdoms.getStringList(kingdom + ".enemies").contains(getKingdom(p))){
 			boo = true;
 		}else{
 			boo = false;
 		}
-
+	}
 
 	
 	return boo;
@@ -1475,6 +1572,7 @@ public class Kingdoms extends JavaPlugin implements Listener{
 	
 	@EventHandler
 	public void onChampionDeath(EntityDeathEvent event){
+		if(isValidWorld(event.getEntity().getWorld())){
 		if(champions.get(event.getEntity().getUniqueId()) != null){
 		if(event.getEntity().getKiller() != null){
 			Player p = event.getEntity().getKiller();
@@ -1529,6 +1627,7 @@ public class Kingdoms extends JavaPlugin implements Listener{
 				
 			}
 		}
+	}
 	}
 	}
 	
