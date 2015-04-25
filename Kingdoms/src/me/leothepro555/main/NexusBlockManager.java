@@ -39,6 +39,9 @@ public class NexusBlockManager implements Listener{
 					dumpgui = Bukkit.createInventory(null, 54, ChatColor.DARK_BLUE + "Donate to " + ChatColor.DARK_GREEN + plugin.getChunkKingdom(event.getClickedBlock().getLocation().getChunk()));
 				p.openInventory(dumpgui);
 				}
+					if(plugin.isKAlly(plugin.getKingdom(p), plugin.getChunkKingdom(event.getClickedBlock().getLocation().getChunk()))){
+					p.sendMessage(ChatColor.RED + "You marked " + plugin.getChunkKingdom(event.getClickedBlock().getLocation().getChunk()) + " as an ally, but they did not mark your kingdom as their ally");
+				}
 				}else if(plugin.getChunkKingdom(event.getClickedBlock().getLocation().getChunk()).equals(plugin.getKingdom(p))){
 					
 					openNexusGui(p);
@@ -65,7 +68,8 @@ public class NexusBlockManager implements Listener{
 							event.setCancelled(true);
 							ItemStack item = event.getCurrentItem();
 							int rp = plugin.kingdoms.getInt(plugin.getKingdom(p) + ".resourcepoints");
-							
+							if(plugin.isMod(plugin.getKingdom(p), p) ||
+									plugin.isKing(p)){
 							
 							if(item.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.AQUA + "Damage Reduction")){
 								if(plugin.hasAmtRp(plugin.getKingdom(p), 10)){
@@ -102,7 +106,9 @@ public class NexusBlockManager implements Listener{
 									p.sendMessage(ChatColor.RED + "You don't have enough resource points for this upgrade!");
 								}
 							}
-							
+						}else{
+							p.sendMessage(ChatColor.RED + "Only kingdom kings and mods can upgrade bonuses");						
+							}
 						}else if(event.getCurrentItem().getItemMeta().getLore().contains(ChatColor.LIGHT_PURPLE + "Nexus Option")){
 							event.setCancelled(true);
 							ItemStack item = event.getCurrentItem();
@@ -114,8 +120,14 @@ public class NexusBlockManager implements Listener{
 							}
 							
 						}else if(event.getCurrentItem().getItemMeta().getLore().contains(ChatColor.LIGHT_PURPLE + "Click to open Champion upgrades")){
+							if(plugin.isMod(plugin.getKingdom(p), p) ||
+									plugin.isKing(p)){
 							event.setCancelled(true);
 							openChampionMenu(p);
+							}else{
+								p.sendMessage(ChatColor.RED + "Only kingdom kings and mods can upgrade bonuses");
+								p.closeInventory();
+								}
 						}
 					}
 				}

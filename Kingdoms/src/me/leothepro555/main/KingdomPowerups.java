@@ -17,6 +17,7 @@ public class KingdomPowerups implements Listener{
 	
 	@EventHandler
 	public void onEntityHit(EntityDamageEvent event){
+		if(plugin.isValidWorld(event.getEntity().getWorld())){
 		if(event.getEntity() instanceof Player){
 			Player p = (Player) event.getEntity();
 			
@@ -31,9 +32,11 @@ public class KingdomPowerups implements Listener{
 			
 		}
 	}
+	}
 	
 	@EventHandler
 	public void onAttack(EntityDamageByEntityEvent event){
+		if(plugin.isValidWorld(event.getEntity().getWorld())){
 		if(event.getDamager() instanceof Player){
 			Player p = (Player) event.getDamager();
 			
@@ -47,6 +50,7 @@ public class KingdomPowerups implements Listener{
 			}
 			
 		}
+	}
 	}
 	
 	@EventHandler
