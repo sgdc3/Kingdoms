@@ -1,0 +1,12 @@
+name: Kingdoms
+author: Hex_27
+version: 1
+description: Have custom enchants!
+main: me.leothepro555.main.Kingdoms
+commands:
+   k:
+    description: opens help
+   kingdom:
+    description: opens help
+   kingdoms:
+    description: opens help
