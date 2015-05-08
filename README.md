@@ -46,6 +46,7 @@ All new admin commands! Permission: kingdoms.admin<br>
 <li>/k info (Shows how Kingdoms works)</li>
 <li>/k join kingdom (Use to join another Kingdom. Must be invited.)</li>
 <li>/k create kingdom (Use to create a kingdom with the name.)</li>
+<li>/k disband (Use to disband your kingdom.)</li>
 <li>/k claim (Use to claim land where you are standing. Costs 5 resource points, and awards 5 might)</li>
 <li>/k unclaim (Use to unclaim one of your lands. Refund 5 resource points, but deducts 5 might)</li>
 <li>/k invade (Use when standing on land that doesn't belong to your kingdom. Spends 10 resource points to challenge their kingdom's champion. If you win, you gain that land and 5 might)</li>
@@ -73,12 +74,10 @@ All new admin commands! Permission: kingdoms.admin<br>
 </ul><b><span style="font-size: 22px">Planned Features</span></b><br>
 <ul>
 <li>/k unclaimall</li>
-<li>/k disband</li>
 <li>/k map on</li>
 <li>/k map</li>
 <li>/k tag</li>
 <li>/k chat</li>
-<li>Finish Github API wiki</li>
 <li>Champion special abilities</li>
 <li>More config options</li>
 </ul><br>
