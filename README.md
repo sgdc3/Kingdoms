@@ -44,32 +44,32 @@ All new admin commands! Permission: kingdoms.admin<br>
 <li>/k (Shows all commands)</li>
 <li>/k nexus (Allows you to replace a block in your land with your nexus. )</li>
 <li>/k info (Shows how Kingdoms works)</li>
-<li>/k join [kingdom] (Use to join another Kingdom. Must be invited.)</li>
-<li>/k create [kingdom] (Use to create a kingdom with the name.)</li>
+<li>/k join kingdom (Use to join another Kingdom. Must be invited.)</li>
+<li>/k create kingdom (Use to create a kingdom with the name.)</li>
 <li>/k claim (Use to claim land where you are standing. Costs 5 resource points, and awards 5 might)</li>
 <li>/k unclaim (Use to unclaim one of your lands. Refund 5 resource points, but deducts 5 might)</li>
 <li>/k invade (Use when standing on land that doesn't belong to your kingdom. Spends 10 resource points to challenge their kingdom's champion. If you win, you gain that land and 5 might)</li>
-<li>/k show [kingdom] (Shows censored information on a particular kingdom. Doesn't show their allies and enemies)</li>
+<li>/k show kingdom (Shows censored information on a particular kingdom. Doesn't show their allies and enemies)</li>
 <li>/k show (Shows your own information. Shows allies and enemies)</li>
-<li>/k king [player] (Passes leadership of your Kingdom to another, turning you into a mod, and that player into a King)</li>
-<li>/k mod [player] (Mods a player in your Kingdom)</li>
-<li>/k demote [player] (Unmods a mod in your Kingdom)</li>
-<li>/k kick [player] (Forcefully remove a player from your kingdom)</li>
-<li>/k invite [player] (Invites a player to your kingdom)</li>
-<li>/k uninvite [player] (Revokes a player's invite)</li>
+<li>/k king player (Passes leadership of your Kingdom to another, turning you into a mod, and that player into a King)</li>
+<li>/k mod player (Mods a player in your Kingdom)</li>
+<li>/k demote player (Unmods a mod in your Kingdom)</li>
+<li>/k kick player (Forcefully remove a player from your kingdom)</li>
+<li>/k invite player (Invites a player to your kingdom)</li>
+<li>/k uninvite player (Revokes a player's invite)</li>
 <li>/k sethome (Sets kingdom home)</li>
 <li>/k home (Goes to kingdom home if it is still valid, not claimed etc)</li>
 <li>/k leave (Leaves your current kingdom)</li>
-<li>/k ally [kingdom/playername] (Allies another kingdom)</li>
-<li>/k enemy [kingdom/playername] (Enemies another kingdom)</li>
-<li>/k neutral [kingdom/playername] (Neutralizes all kingdom relations)</li>
+<li>/k ally kingdom/playername (Allies another kingdom)</li>
+<li>/k enemy kingdom/playername (Enemies another kingdom)</li>
+<li>/k neutral kingdom/playername (Neutralizes all kingdom relations)</li>
 <li><b>/k admin (Shows admin commands) Permission: kingdoms.admin</b></li>
 <li><b>/k admin toggle (Toggles admin mode, allowing you to destroy, place and attack players anywhere) Permission: kingdoms.admin</b></li>
 <li><b>/k admin safezone (Claims a safezone patch) Permission: kingdoms.admin</b></li>
 <li><b>/k admin warzone (Claims a warzone patch) Permission: kingdoms.admin</b></li>
 <li><b>/k admin unclaim (Forcefully unclaim a non-nexus piece if land) Permission: kingdoms.admin</b></li>
-<li><b>/k admin show [Kingdom] (Shows full information on a kingdom) Permission: kingdoms.admin</b></li>
-<li><b>/k admin rp [kingdom] [amount] (Adds/subtracts the amount from a kingdom. Negative amount to subtract, positive amount to add.) Permission: kingdoms.admin</b></li>
+<li><b>/k admin show Kingdom (Shows full information on a kingdom) Permission: kingdoms.admin</b></li>
+<li><b>/k admin rp kingdom amount (Adds/subtracts the amount from a kingdom. Negative amount to subtract, positive amount to add.) Permission: kingdoms.admin</b></li>
 </ul><b><span style="font-size: 22px">Planned Features</span></b><br>
 <ul>
 <li>/k unclaimall</li>
