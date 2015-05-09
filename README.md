@@ -33,7 +33,7 @@ All new admin commands! Permission: kingdoms.admin<br>
 <li>Supports worldguard! Prevent players from claiming important parts of your regions and stop them from placing nexuses in your regions!</li>
 <li>Supports java 6 and above!</li>
 <li>Per world disable! Allow this only on worlds you desire!</li>
-<li>Kingdoms API: Developers can use this to make custom versions of this plugin! API info can be found <a href="https://github.com/Hex27/Kingdoms" target="_blank" class="externalLink" rel="nofollow">here</a></li>
+<li>Kingdoms API: Developers can use this to make custom versions of this plugin! API info can be found <a href="#kingdomsapi">here</a></li>
 <li>More invading action than Factions! Players can claim large areas, and others can invade it even if the player is offline, allowing for more interesting experiences, and also an excuse to keep coming back!</li>
 <li>Nexus GUI! Showing player resource points, upgrades, champion upgrades and so on!</li>
 <li>A /k info! Players only need one sigh telling them to do so, and they can see how to use Kingdoms on their own!</li>
@@ -84,6 +84,7 @@ All new admin commands! Permission: kingdoms.admin<br>
 
 <hr>
 
+<a name="kingdomsapi" />
 <b><span style="font-size: 22px">The Api</span></b><br><br>
 Kingdoms can also be used as an API for developers to make sub-plugins of Kingdoms, for their own custom versions.
 This can be done relatively easily by importing the Kingdoms.jar file, importing Kingdoms.class then getting information and setting data with it (Ex. Kingdoms.newKingdom(king.getUniqueId(), "TestKingdom"); )
