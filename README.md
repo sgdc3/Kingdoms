@@ -24,7 +24,7 @@ There is also the Nexus Block. To place it, do /k nexus, then right click a bloc
 <br>
 All new admin commands! Permission: kingdoms.admin<br>
 <br>
-<span style="font-size: 18px"><b><b>If you are using worldguard, this only works on worldguard 5.9</b></b></span><br>
+<span style="font-size: 18px"><b><b>Now supports all Worldguard versions!</b></b></span><br>
 <br>
 <span style="font-size: 22px"><b>Features</b></span><br>
 <ul>
