@@ -1,0 +1,32 @@
+#######################################################
+# __  __ __                 __                        #    
+#|  |/  |__|.-----.-----.--|  |.-----.--------.-----. #
+#|     <|  ||     |  _  |  _  ||  _  |        |__ --| #
+#|__|\__|__||__|__|___  |_____||_____|__|__|__|_____| #
+#                 |_____|                             #
+#######################################################
+
+#recommended to have a set of worlds (world, end, nether) only as the kingdoms apply to all worlds.
+enabled-worlds:
+- world
+
+no-region-claim: true
+#This option is for worldguard users. If this is true, then all players cannot claim land in worldguard
+#regions. If, however, the region is something like half a chunk, the players can claim that land, but they
+#still can't place nexuses or set kingdom homes in it.
+
+resource-point-trade-blacklist:
+- DIRT
+- COBBLESTONE
+- GRAVEL
+
+items-needed-for-one-resource-point: 10
+
+#put them in this manner [Item Name],[resource point value]
+special-item-cases:
+- IRON_INGOT,1
+- GOLD_INGOT,1
+- EMERALD,2
+- DIAMOND,3
+
+
