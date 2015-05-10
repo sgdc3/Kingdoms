@@ -51,6 +51,8 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+
 
 public class Kingdoms extends JavaPlugin implements Listener{
 
@@ -177,6 +179,13 @@ public class Kingdoms extends JavaPlugin implements Listener{
 	    return plugin;
 	}
 	
+	public boolean hasWorldEdit(){
+		if(Bukkit.getPluginManager().getPlugin("WorldEdit") != null){
+			return true;
+		}
+		return false;
+	}
+	
 	@SuppressWarnings("deprecation")
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if(sender instanceof Player){
@@ -218,6 +227,7 @@ public class Kingdoms extends JavaPlugin implements Listener{
 				if(p.hasPermission("kingdoms.admin")){
 					p.sendMessage(ChatColor.RED + "===Admin Commands===");
 					p.sendMessage(ChatColor.DARK_PURPLE + "/k admin toggle " + ChatColor.AQUA + "allows you to harm anyone in any land, and allows you to break/place blocks in any land.");
+					p.sendMessage(ChatColor.DARK_PURPLE + "/k admin disband [kingdom] " + ChatColor.AQUA + "Forcefully disband a kingdom");
 					p.sendMessage(ChatColor.DARK_PURPLE + "/k admin safezone " + ChatColor.AQUA + "claims current piece of land as a safezone.");
 					p.sendMessage(ChatColor.DARK_PURPLE + "/k admin warzone " + ChatColor.AQUA + "claims current piece of land as a warzone.");
 					p.sendMessage(ChatColor.DARK_PURPLE + "/k admin unclaim " + ChatColor.AQUA + "forcefully unclaims a claimed piece of land. Can also be used to unclaim warzones and safezones");
@@ -232,6 +242,8 @@ public class Kingdoms extends JavaPlugin implements Listener{
 					p.sendMessage(ChatColor.RED + "===Admin Commands===");
 					p.sendMessage(ChatColor.DARK_PURPLE + "/k admin toggle " + ChatColor.AQUA + "allows you to harm anyone in any land, and allows you to break/place blocks in any land.");
 					p.sendMessage(ChatColor.DARK_PURPLE + "/k admin disband [kingdom] " + ChatColor.AQUA + "Forcefully disband a kingdom");
+					p.sendMessage(ChatColor.DARK_PURPLE + "/k admin selectsafezone " + ChatColor.AQUA + "Select safezone through worldedit selection. Claims the chunks of the selected blocks. (Region may be larger than expected.)");
+					p.sendMessage(ChatColor.DARK_PURPLE + "/k admin selectwarzone " + ChatColor.AQUA + "Select warzone through worldedit selection. Claims the chunks of the selected blocks. (Region may be larger than expected.)");
 					p.sendMessage(ChatColor.DARK_PURPLE + "/k admin safezone " + ChatColor.AQUA + "claims current piece of land as a safezone.");
 					p.sendMessage(ChatColor.DARK_PURPLE + "/k admin warzone " + ChatColor.AQUA + "claims current piece of land as a warzone.");
 					p.sendMessage(ChatColor.DARK_PURPLE + "/k admin unclaim " + ChatColor.AQUA + "forcefully unclaims a claimed piece of land. Can also be used to unclaim warzones and safezones");
@@ -263,7 +275,46 @@ public class Kingdoms extends JavaPlugin implements Listener{
 	      }else if(args[1].equalsIgnoreCase("warzone")){
 		    		  claimWarzoneCurrentPosition(p);
 		    	  
-		      }else if(args[1].equalsIgnoreCase("unclaim")){
+		      }else if(args[1].equalsIgnoreCase("selectsafezone")){
+	    		 if(hasWorldEdit()){
+	    			 WorldEditPlugin worldedit = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
+	    			 if(worldedit.getSelection(p) != null){
+	    				 for(Chunk c: wet.getRegionChunks(p)){
+	    					 this.claimSafezoneChunk(c);
+	    				 }
+	    				 p.sendMessage(ChatColor.GREEN + "Safezone claimed.");
+	    			 }else{
+	    				 p.sendMessage(ChatColor.RED + "You don't have a worldedit selection.");
+	    			 }
+	    		 }
+		    	  
+	      }else if(args[1].equalsIgnoreCase("selectwarzone")){
+	    	  if(hasWorldEdit()){
+	    			 WorldEditPlugin worldedit = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
+	    			 if(worldedit.getSelection(p) != null){
+	    				 for(Chunk c: wet.getRegionChunks(p)){
+	    					 this.claimWarzoneChunk(c);
+	    				 }
+	    				 p.sendMessage(ChatColor.GREEN + "Warzone claimed.");
+	    			 }else{
+	    				 p.sendMessage(ChatColor.RED + "You don't have a worldedit selection.");
+	    			 }
+	    		 }
+	    	  
+      }else if(args[1].equalsIgnoreCase("unclaimselection")){
+    	  if(hasWorldEdit()){
+ 			 WorldEditPlugin worldedit = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
+ 			 if(worldedit.getSelection(p) != null){
+ 				 for(Chunk c: wet.getRegionChunks(p)){
+ 					 this.emptyCurrentPosition(c);
+ 				 }
+ 				 p.sendMessage(ChatColor.GREEN + "Land in selection force unclaimed.");
+ 			 }else{
+ 				 p.sendMessage(ChatColor.RED + "You don't have a worldedit selection.");
+ 			 }
+ 		 }
+ 	  
+}else if(args[1].equalsIgnoreCase("unclaim")){
 		    	  if(getChunkKingdom(p.getLocation().getChunk()) != null){
 		    		  forceUnclaimCurrentPosition(p);
 		    	  }
@@ -831,12 +882,14 @@ public class Kingdoms extends JavaPlugin implements Listener{
 				}
 			}else if(args[0].equalsIgnoreCase("sethome")){
 			if(isKing(p)){
-				if(getChunkKingdom(p.getLocation().getChunk()).equals(getKingdom(p))){
+				if(getChunkKingdom(p.getLocation().getChunk()) != null &&
+						getChunkKingdom(p.getLocation().getChunk()).equals(getKingdom(p))){
 				kingdoms.set(getKingdom(p) + ".home", locationToString(p.getLocation()));
 				p.sendMessage(ChatColor.GREEN + "Kingdom home set to your location");
 			}else{
 				p.sendMessage(ChatColor.RED + "You can't set your kingdom home outside your land!");
 			}
+				
 			}else{
 				p.sendMessage(ChatColor.RED + "Only kingdom king can set the kingdom home!");
 			}
@@ -1441,12 +1494,20 @@ public class Kingdoms extends JavaPlugin implements Listener{
 			if(adminmode.contains(damager.getUniqueId())){
 				return;
 			}
-				if(getChunkKingdom(p.getLocation().getChunk()).equals("SafeZone")||
-						getChunkKingdom(damager.getLocation().getChunk()).equals("SafeZone")){
+			if(getChunkKingdom(p.getLocation().getChunk()) != null){
+				if(getChunkKingdom(p.getLocation().getChunk()).equals("SafeZone")){
 					event.setCancelled(true);
-					damager.sendMessage(ChatColor.RED + "You can't damage a player while you are in a safezone, or when the player is in a safezone.");
+					damager.sendMessage(ChatColor.RED + "You can't damage a player while he is in a safezone");
+				return;
 				}
-			
+			}
+			if(getChunkKingdom(damager.getLocation().getChunk()) != null){
+				if(getChunkKingdom(damager.getLocation().getChunk()).equals("SafeZone")){
+					event.setCancelled(true);
+					damager.sendMessage(ChatColor.RED + "You can't damage a player while you are in a safezone");
+			return;	
+				}
+			}
 		}
 		}
 	}
@@ -2455,6 +2516,21 @@ public class Kingdoms extends JavaPlugin implements Listener{
 		
 		return loc;
 		
+	}
+	
+	public void claimSafezoneChunk(Chunk c){
+		if(this.land.getString(chunkToString(c)) == null){
+			land.set(chunkToString(c), "SafeZone");
+			saveClaimedLand();
+		}
+	}
+	
+	
+	public void claimWarzoneChunk(Chunk c){
+		if(this.land.getString(chunkToString(c)) == null){
+			land.set(chunkToString(c), "WarZone");
+			saveClaimedLand();
+		}
 	}
 	
 	public void claimSafezoneCurrentPosition(Player p){

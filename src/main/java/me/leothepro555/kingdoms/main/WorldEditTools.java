@@ -1,10 +1,17 @@
 package me.leothepro555.kingdoms.main;
 
+import java.util.ArrayList;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 
 import com.sk89q.worldedit.bukkit.BukkitUtil;
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+import com.sk89q.worldedit.bukkit.selections.Selection;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.managers.RegionManager;
@@ -42,6 +49,30 @@ public class WorldEditTools {
 			
 		}
 		return false;
+	}
+	
+	public ArrayList<Chunk> getRegionChunks(Player p){
+		ArrayList<Chunk> chunks = new ArrayList<Chunk>();
+		WorldEditPlugin worldedit = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");//need to get the instance from the PluginManager
+		Selection s = worldedit.getSelection(p);
+		int xMin = (int) s.getMinimumPoint().getX();
+		double xMax = s.getMaximumPoint().getX();
+		double zMax = s.getMaximumPoint().getZ();
+		int zMin = (int) s.getMinimumPoint().getZ();
+		for (int i = xMin; i<xMax; i++)
+		{
+		      for (int k = zMin; k<zMax; k++)
+		      {
+		    	  Block block = p.getWorld().getBlockAt(i, 0, k);
+		          if(!chunks.contains(block.getChunk())){
+		        	  chunks.add(block.getChunk());
+		          }
+		      }
+		  
+		}
+		
+		
+		return chunks;
 	}
 	
 }
