@@ -164,10 +164,12 @@ public class Kingdoms extends JavaPlugin implements Listener{
 	HashMap<UUID, Integer> immunity = new HashMap<UUID, Integer>();
 	HashMap<UUID, Chunk> champions = new HashMap<UUID, Chunk>();
 	HashMap<UUID, String> nexusguards = new HashMap<UUID, String>();
+	HashMap<UUID, Location> invasiondef = new HashMap<UUID, Location>();
 	HashMap<UUID, UUID> duelpairs = new HashMap<UUID, UUID>();
 	ArrayList<UUID> adminmode = new ArrayList<UUID>();
 	ArrayList<UUID> mapmode = new ArrayList<UUID>();
 	ArrayList<UUID> rapidclaiming = new ArrayList<UUID>();
+	
 	
 	public Plugin getWorldGuard() {
 	    Plugin plugin = getServer().getPluginManager().getPlugin("WorldGuard");
@@ -1192,6 +1194,16 @@ public class Kingdoms extends JavaPlugin implements Listener{
 				mapmode.remove(p.getUniqueId());
 			}
 			}
+				}else if(args[0].equalsIgnoreCase("defend")){
+					
+				
+				if(this.invasiondef.containsKey(p.getUniqueId())){
+					p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "Defend our land!");
+					p.teleport(invasiondef.get(p.getUniqueId()));
+					invasiondef.remove(p.getUniqueId());
+				}
+				
+				
 				}else{
 				p.sendMessage(ChatColor.RED + "[Kingdoms] Unknown command. Do /k for commands.");
 			}
@@ -1564,8 +1576,10 @@ public class Kingdoms extends JavaPlugin implements Listener{
 	
 	public void disbandKingdom(String tag){
 		ArrayList<OfflinePlayer> members = getKingdomMembers(tag);
+		if(hasNexus(tag)){
 		getNexusLocation(tag).getBlock().setType(Material.AIR);
-		getNexusLocation(tag).getBlock().removeMetadata("nexusblock", this);;
+		getNexusLocation(tag).getBlock().removeMetadata("nexusblock", this);
+	}
 		kingdoms.set(tag, null);
 		for(OfflinePlayer p: members){
 			players.set(p.getUniqueId().toString() + ".kingdom", "");
@@ -1851,7 +1865,7 @@ public class Kingdoms extends JavaPlugin implements Listener{
 		enemies.add(enemy);
 	}
 	
-	if(allies.contains(enemy)){	
+	if(allies.contains(enemy)){
 		allies.remove(enemy);
 	}
 	
@@ -1867,6 +1881,8 @@ public class Kingdoms extends JavaPlugin implements Listener{
 	if(enemyallies.contains(kingdom)){	
 		enemyallies.remove(kingdom);
 	}
+         		kingdoms.set(enemy + ".allies", enemyallies);
+         		kingdoms.set(enemy + ".enemies", enemyenemies);
          		kingdoms.set(kingdom + ".allies", allies);
          		kingdoms.set(kingdom + ".enemies", enemies);
          		saveKingdoms();
@@ -2242,6 +2258,7 @@ public class Kingdoms extends JavaPlugin implements Listener{
 	public void spawnChampion(String kingdom, Location location, Player p){
 		Zombie champion = (Zombie) location.getWorld().spawnEntity(location, EntityType.ZOMBIE);
 		champion.setTarget(p);
+		champion.setBaby(false);
 		champion.setMaxHealth(this.kingdoms.getDouble(kingdom + ".champion.health"));
 		champion.setHealth(this.kingdoms.getDouble(kingdom + ".champion.health"));
 		champion.getEquipment().setChestplate(new ItemStack(Material.IRON_CHESTPLATE));
@@ -2265,13 +2282,14 @@ public class Kingdoms extends JavaPlugin implements Listener{
 		
 		champions.put(champion.getUniqueId(), location.getChunk());
 		duelpairs.put(champion.getUniqueId(), p.getUniqueId());
-		
+	    
 	}
 	
 	public void spawnNexusGuard(String kingdom, Location location, Player p){
 		Zombie champion = (Zombie) location.getWorld().spawnEntity(location, EntityType.ZOMBIE);
 		champion.setTarget(p);
 		champion.setMaxHealth(30.0);
+		champion.setBaby(false);
 		champion.setHealth(30.0);
 		champion.getEquipment().setChestplate(new ItemStack(Material.LEATHER_CHESTPLATE));
 		
@@ -2472,6 +2490,10 @@ public class Kingdoms extends JavaPlugin implements Listener{
 			this.immunity.put(p.getUniqueId(), 60);
 			p.sendMessage(ChatColor.RED + "10 resourcepoints spent");
 			spawnChampion(getChunkKingdom(c), p.getLocation(), p);
+			for(Player player : this.getKingdomOnlineMembers(getChunkKingdom(c))){
+				this.invasiondef.put(player.getUniqueId(),p.getLocation());
+			}
+			this.messageKingdomPlayers(getChunkKingdom(c), ChatColor.RED + p.getName() + " is invading your land! Do /k defend to protect it!");
 			minusRP(getKingdom(p), 10);
 			}else{
 				p.sendMessage(ChatColor.RED + "You can't claim a nexus chunk");

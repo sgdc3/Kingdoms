@@ -592,6 +592,8 @@ public class NexusBlockManager implements Listener{
 				plugin.misupgrades.set(kingdom + "." + upgrade, true);
 				plugin.saveMisupgrades();
 				p.sendMessage(ChatColor.GREEN + "Anti-Trample upgrade acquired!");
+				p.closeInventory();
+			    openMisMenu(p);
 			}else{
 				p.sendMessage(ChatColor.RED + "You don't have enough resource points.");
 			}
@@ -602,6 +604,8 @@ public class NexusBlockManager implements Listener{
 				plugin.misupgrades.set(kingdom + "." + upgrade, true);
 				plugin.saveMisupgrades();
 				p.sendMessage(ChatColor.GREEN + "Nexus Guard upgrade acquired!");
+				p.closeInventory();
+			    openMisMenu(p);
 			}else{
 				p.sendMessage(ChatColor.RED + "You don't have enough resource points.");
 			}
@@ -612,6 +616,8 @@ public class NexusBlockManager implements Listener{
 				plugin.misupgrades.set(kingdom + "." + upgrade, true);
 				plugin.saveMisupgrades();
 				p.sendMessage(ChatColor.GREEN + "Glory upgrade acquired!");
+				p.closeInventory();
+			    openMisMenu(p);
 			}else{
 				p.sendMessage(ChatColor.RED + "You don't have enough resource points.");
 			}
@@ -622,6 +628,8 @@ public class NexusBlockManager implements Listener{
 				plugin.misupgrades.set(kingdom + "." + upgrade, true);
 				plugin.saveMisupgrades();
 				p.sendMessage(ChatColor.GREEN + "Bomb Expertise upgrade acquired!");
+				p.closeInventory();
+			    openMisMenu(p);
 			}else{
 				p.sendMessage(ChatColor.RED + "You don't have enough resource points.");
 			}

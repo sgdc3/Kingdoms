@@ -53,7 +53,7 @@ public class WorldEditTools {
 	
 	public ArrayList<Chunk> getRegionChunks(Player p){
 		ArrayList<Chunk> chunks = new ArrayList<Chunk>();
-		WorldEditPlugin worldedit = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");//need to get the instance from the PluginManager
+		WorldEditPlugin worldedit = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
 		Selection s = worldedit.getSelection(p);
 		int xMin = (int) s.getMinimumPoint().getX();
 		double xMax = s.getMaximumPoint().getX();
