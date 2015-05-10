@@ -70,7 +70,7 @@ All new admin commands! Permission: kingdoms.admin<br>
 <li><b>/k admin warzone (Claims a warzone patch) Permission: kingdoms.admin</b></li>
 <li><b>/k admin unclaim (Forcefully unclaim a non-nexus piece if land) Permission: kingdoms.admin</b></li>
 <li><b>/k admin show Kingdom (Shows full information on a kingdom) Permission: kingdoms.admin</b></li>
-<li><b>/k admin rp kingdom amount (Adds/subtracts the amount from a kingdom. Negative amount to subtract, positive amount to add.) Permission: kingdoms.admin</b></li>
+<li><b>/k admin rp kingdom amount (Adds/subtracts the amount from a kingdom. Negative amount to subtract, positive amount to add.) Permission: kingdoms.admin</b></li></ul>
 
 <hr>
 
@@ -91,7 +91,7 @@ Donate 10 USD<br>
 
 <hr>
 
-</ul><b><span style="font-size: 22px">Planned Features</span></b><br>
+<b><span style="font-size: 22px">Planned Features</span></b><br>
 <ul>
 <li>/k unclaimall</li>
 <li>/k map on</li>
