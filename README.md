@@ -70,8 +70,28 @@ All new admin commands! Permission: kingdoms.admin<br>
 <li><b>/k admin warzone (Claims a warzone patch) Permission: kingdoms.admin</b></li>
 <li><b>/k admin unclaim (Forcefully unclaim a non-nexus piece if land) Permission: kingdoms.admin</b></li>
 <li><b>/k admin show Kingdom (Shows full information on a kingdom) Permission: kingdoms.admin</b></li>
-<li><b>/k admin rp kingdom amount (Adds/subtracts the amount from a kingdom. Negative amount to subtract, positive amount to add.) Permission: kingdoms.admin</b></li>
-</ul><b><span style="font-size: 22px">Planned Features</span></b><br>
+<li><b>/k admin rp kingdom amount (Adds/subtracts the amount from a kingdom. Negative amount to subtract, positive amount to add.) Permission: kingdoms.admin</b></li></ul>
+
+<hr>
+
+<b><span style="font-size: 22px">Donate to me!</span><br>
+<span style="font-size: 15px">Like my work? Think I deserve a Pizza? I'll appreciate all donations!<br>
+</span><br>
+Donate 1 USD<br>
+<a href="https://www.paypal.com/sg/cgi-bin/webscr?cmd=_flow&amp;SESSION=8qHzd7_EJCmgbOnBzbBOiXhzb2yG0Fer9wPk1Lsht1GxK5YCN1RTBtpcqgS&amp;dispatch=50a222a57771920b6a3d7b606239e4d529b525e0b7e69bf0224adecfb0124e9b61f737ba21b08198acc59b45c1b5383c3fbf91319c9514c0" target="_blank" class="externalLink" rel="nofollow"><img src="https://www.paypal.com/en_US/i/btn/x-click-but21.gif" class="bbCodeImage LbImage" alt="[&#8203;IMG]" data-url="https://www.paypal.com/en_US/i/btn/x-click-but21.gif"></a><br>
+<br>
+Donate 3 USD<br>
+<a href="https://www.paypal.com/sg/cgi-bin/webscr?cmd=_flow&amp;SESSION=Od_hFUYKjlIxkQtN4akiebmD9gkOsfF7EyNG8op30cab6IoFHIvkn7ZgvH4&amp;dispatch=50a222a57771920b6a3d7b606239e4d529b525e0b7e69bf0224adecfb0124e9b61f737ba21b08198acc59b45c1b5383c3fbf91319c9514c0" target="_blank" class="externalLink" rel="nofollow"><img src="https://www.paypal.com/en_US/i/btn/x-click-but21.gif" class="bbCodeImage LbImage" alt="[&#8203;IMG]" data-url="https://www.paypal.com/en_US/i/btn/x-click-but21.gif"></a><br>
+<br>
+Donate 5 USD<br>
+<a href="https://www.paypal.com/sg/cgi-bin/webscr?cmd=_flow&amp;SESSION=j6W3tDRjBLw9HD5wMIpo1VJJtq4biX5hHWfE5YeX3lNExM5uuFo2aETL0Re&amp;dispatch=50a222a57771920b6a3d7b606239e4d529b525e0b7e69bf0224adecfb0124e9b61f737ba21b08198acc59b45c1b5383c3fbf91319c9514c0" target="_blank" class="externalLink" rel="nofollow"><img src="https://www.paypal.com/en_US/i/btn/x-click-but21.gif" class="bbCodeImage LbImage" alt="[&#8203;IMG]" data-url="https://www.paypal.com/en_US/i/btn/x-click-but21.gif"></a><br>
+<br>
+Donate 10 USD<br>
+<a href="https://www.paypal.com/sg/cgi-bin/webscr?cmd=_flow&amp;SESSION=-JKsk6W043-Hs_Y4UQfA7WW8s5oYMKl6RNO5H3jWUoC84Hhq6OVDMIWCWva&amp;dispatch=50a222a57771920b6a3d7b606239e4d529b525e0b7e69bf0224adecfb0124e9b61f737ba21b08198acc59b45c1b5383c3fbf91319c9514c0" target="_blank" class="externalLink" rel="nofollow"><img src="https://www.paypal.com/en_US/i/btn/x-click-but21.gif" class="bbCodeImage LbImage" alt="[&#8203;IMG]" data-url="https://www.paypal.com/en_US/i/btn/x-click-but21.gif"></a></b>
+
+<hr>
+
+<b><span style="font-size: 22px">Planned Features</span></b><br>
 <ul>
 <li>/k unclaimall</li>
 <li>/k map on</li>

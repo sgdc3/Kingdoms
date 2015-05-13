@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>me.leothepro555</groupId>
     <artifactId>kingdoms</artifactId>
-    <version>0.8</version>
+    <version>0.10</version>
 	<name>Kingdoms</name>
 	<url>http://www.spigotmc.org/resources/kingdoms.6392/</url>
 	<description>The plugin of empires and champions! Kingdoms is a bukkit/spigot 1.8 plugin similar to factions, but with some different features. Kingdoms is a beta currently.</description>
