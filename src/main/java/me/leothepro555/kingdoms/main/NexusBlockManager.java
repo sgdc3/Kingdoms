@@ -22,6 +22,7 @@ public class NexusBlockManager implements Listener{
 	private Inventory dumpgui;
 	private Inventory champions;
 	private int rpi = 10;
+	
 	public NexusBlockManager(Kingdoms plugin){
 		this.plugin = plugin;
 		if(plugin.getConfig().get("items-needed-for-one-resource-point") != null){
@@ -67,6 +68,7 @@ public class NexusBlockManager implements Listener{
 			event.setCancelled(true);
 			if(event.getCurrentItem() != null){
 				if(event.getCurrentItem().getItemMeta() != null){
+					
 					if(event.getCurrentItem().getItemMeta().getLore() != null){
 						if(event.getCurrentItem().getItemMeta().getLore().contains(ChatColor.LIGHT_PURPLE + "Nexus Upgrade")){
 							event.setCancelled(true);
@@ -74,6 +76,8 @@ public class NexusBlockManager implements Listener{
 							int rp = plugin.kingdoms.getInt(plugin.getKingdom(p) + ".resourcepoints");
 							if(plugin.isMod(plugin.getKingdom(p), p) ||
 									plugin.isKing(p)){
+								
+								
 							
 							if(item.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.AQUA + "Damage Reduction")){
 								if(plugin.hasAmtRp(plugin.getKingdom(p), 10)){
@@ -149,6 +153,12 @@ public class NexusBlockManager implements Listener{
 			event.setCancelled(true);
 			ItemStack item = event.getCurrentItem();
 			
+			
+			if(event.getCurrentItem().getItemMeta().getDisplayName().equals(ChatColor.RED + "Return to main menu")){
+				p.closeInventory();
+				openNexusGui(p);
+			}
+			
 			if(item.getItemMeta().getDisplayName().equals(ChatColor.AQUA + "Champion Weapon")){
 				if(getChampionUpgrade(plugin.getKingdom(p), "weapon") < 4){
 				if(plugin.hasAmtRp(plugin.getKingdom(p), 10)){
@@ -210,8 +220,42 @@ public class NexusBlockManager implements Listener{
 
 			}
 			
+			if(item.getItemMeta().getDisplayName().equals(ChatColor.AQUA + "Drag")){
+				if(plugin.kingdoms.getInt(plugin.getKingdom(p) + ".champion.drag") == 0){
+				if(plugin.hasAmtRp(plugin.getKingdom(p), 30)){
+					plugin.minusRP(plugin.getKingdom(p), 30);
+					upgradeChampion(plugin.getKingdom(p), "drag", 1);
+					p.sendMessage(ChatColor.GREEN + "Drag Enabled!");
+				p.closeInventory();
+				openChampionMenu(p);
+				}else{
+					p.sendMessage(ChatColor.RED + "You don't have enough resource points for this upgrade!");
+				}
+			}else{
+				p.sendMessage(ChatColor.RED + "This upgrade is at its maximum level");
+			}
+			}
+			
+			if(item.getItemMeta().getDisplayName().equals(ChatColor.AQUA + "Mock")){
+				if(plugin.hasAmtRp(plugin.getKingdom(p), 10)){
+					plugin.minusRP(plugin.getKingdom(p), 10);
+					upgradeChampion(plugin.getKingdom(p), "mock", 1);
+					p.sendMessage(ChatColor.GREEN + "Mock upgraded! Total: " + getChampionUpgrade(plugin.getKingdom(p), "mock"));
+				p.closeInventory();
+				openChampionMenu(p);
+				}else{
+					p.sendMessage(ChatColor.RED + "You don't have enough resource points for this upgrade!");
+				}
+
+			}
+			
 		}else if(event.getInventory().getName().equals(ChatColor.AQUA + "Extra Upgrades")){
 			event.setCancelled(true);
+			
+			if(event.getCurrentItem().getItemMeta().getDisplayName().equals(ChatColor.RED + "Return to main menu")){
+				p.closeInventory();
+				openNexusGui(p);
+			}
 			ItemStack item = event.getCurrentItem();
 			
 			if(item.getItemMeta().getDisplayName().equals(ChatColor.AQUA + "Anti-Creeper")){
@@ -375,6 +419,7 @@ public class NexusBlockManager implements Listener{
 		rm.setLore(rl);
 		r.setItemMeta(rm);
 		
+		
 		nexusgui.setItem(0, i1);
 		nexusgui.setItem(9, i2);
 		nexusgui.setItem(10, i3);
@@ -440,6 +485,32 @@ public class NexusBlockManager implements Listener{
 		i4m.setLore(i4l);
 		i4.setItemMeta(i4m);
 		
+		ItemStack i5 = new ItemStack(Material.ENDER_PEARL);
+		ItemMeta i5m = i5.getItemMeta();
+		i5m.setDisplayName(ChatColor.AQUA + "Drag");
+		ArrayList<String> i5l = new ArrayList<String>();
+		i5l.add(ChatColor.GREEN + "When the player is more than 5 blocks");
+		i5l.add(ChatColor.GREEN + "away, the champion pulls the player");
+		i5l.add(ChatColor.GREEN + "to the champion's location.");
+		i5l.add(ChatColor.RED + "Enabled: " + (plugin.kingdoms.getInt(plugin.getKingdom(p) + ".champion.drag") > 0));
+		i5l.add(ChatColor.RED + "Cost: 30 resource points");
+		i5l.add(ChatColor.LIGHT_PURPLE + "Champion Upgrade");
+		i5m.setLore(i5l);
+		i5.setItemMeta(i5m);
+		
+		ItemStack i6 = new ItemStack(Material.FEATHER);
+		ItemMeta i6m = i6.getItemMeta();
+		i6m.setDisplayName(ChatColor.AQUA + "Mock");
+		ArrayList<String> i6l = new ArrayList<String>();
+		i6l.add(ChatColor.GREEN + "While dueling the champion, the invader");
+		i6l.add(ChatColor.GREEN + "cannot place or break blocks in a range");
+		i6l.add(ChatColor.GREEN + "of the champion.");
+		i6l.add(ChatColor.RED + "Current Mock Range: " + plugin.kingdoms.getInt(plugin.getKingdom(p) + ".champion.mock") + " blocks");
+		i6l.add(ChatColor.RED + "Cost: 10 resource points");
+		i6l.add(ChatColor.LIGHT_PURPLE + "Champion Upgrade");
+		i6m.setLore(i6l);
+		i6.setItemMeta(i6m);
+		
 		ItemStack r = new ItemStack(Material.HAY_BLOCK);
 		ItemMeta rm = r.getItemMeta();
 		rm.setDisplayName(ChatColor.AQUA + "Resource Points");
@@ -449,11 +520,19 @@ public class NexusBlockManager implements Listener{
 		rm.setLore(rl);
 		r.setItemMeta(rm);
 		
+		ItemStack backbtn = new ItemStack(Material.REDSTONE_BLOCK);
+		ItemMeta backbtnmeta = backbtn.getItemMeta();
+		backbtnmeta.setDisplayName(ChatColor.RED + "Return to main menu");
+		backbtn.setItemMeta(backbtnmeta);
+		
 		champions.setItem(0, i1);
 		champions.setItem(1, i2);
 		champions.setItem(2, i3);
 		champions.setItem(3, i4);
+		champions.setItem(4, i5);
+		champions.setItem(5, i6);
 		champions.setItem(17, r);
+		champions.setItem(26, backbtn);
 		
 		p.openInventory(champions);
 	}
@@ -552,12 +631,19 @@ public class NexusBlockManager implements Listener{
 		rm.setLore(rl);
 		r.setItemMeta(rm);
 		
+
+		ItemStack backbtn = new ItemStack(Material.REDSTONE_BLOCK);
+		ItemMeta backbtnmeta = backbtn.getItemMeta();
+		backbtnmeta.setDisplayName(ChatColor.RED + "Return to main menu");
+		backbtn.setItemMeta(backbtnmeta);
+		
 		champions.setItem(0, i1);
 		champions.setItem(1, i2);
 		champions.setItem(2, i3);
 		champions.setItem(3, i4);
 		champions.setItem(4, i5);
 		champions.setItem(17, r);
+		champions.setItem(26, backbtn);
 		
 		p.openInventory(champions);
 	}
