@@ -17,13 +17,13 @@ public class PlayerChangeChunkEvent extends Event {
 		this.to = to;
 	}
 	
-	 public HandlerList getHandlers() {
+	public HandlerList getHandlers() {
 	        return handlers;
-	    }
+	}
 	 
-	    public static HandlerList getHandlerList() {
+	public static HandlerList getHandlerList() {
 	        return handlers;
-	    }
+	}
 	
 	public Player getPlayer(){
 		return p;
