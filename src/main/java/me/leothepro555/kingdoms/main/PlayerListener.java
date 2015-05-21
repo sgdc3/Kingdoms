@@ -27,7 +27,13 @@ public class PlayerListener implements Listener{
 			Bukkit.getLogger().info("Added " + event.getPlayer().getName() + "'s info to players.yml");
 			
 	}
+		
 		Player p = event.getPlayer();
+        
+		if(!plugin.chatoption.containsKey(p.getUniqueId())){
+			plugin.chatoption.put(p.getUniqueId(), "public");
+		}
+
 		if(plugin.isValidWorld(p.getWorld())){
 		if(plugin.getChunkKingdom(event.getPlayer().getLocation().getChunk()) != null){
 		 if(!plugin.kingdoms.getKeys(false).contains(plugin.getChunkKingdom(event.getPlayer().getLocation().getChunk()))){

@@ -38,6 +38,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -190,6 +191,7 @@ public class Kingdoms extends JavaPlugin implements Listener{
 	ArrayList<UUID> adminmode = new ArrayList<UUID>();
 	ArrayList<UUID> mapmode = new ArrayList<UUID>();
 	ArrayList<UUID> rapidclaiming = new ArrayList<UUID>();
+	HashMap<UUID, String> chatoption = new HashMap<UUID, String>();
 	
 	
 	public Plugin getWorldGuard() {
@@ -227,6 +229,7 @@ public class Kingdoms extends JavaPlugin implements Listener{
 				p.sendMessage(ChatColor.LIGHT_PURPLE + "/k leave " + ChatColor.AQUA + "leaves your Kingdom.");
 				p.sendMessage(ChatColor.LIGHT_PURPLE + "/k create [kingdom name] " + ChatColor.AQUA + "creates a kingdom");
 				p.sendMessage(ChatColor.LIGHT_PURPLE + "/k claim " + ChatColor.AQUA + "claims a patch of land for your kingdom");
+				p.sendMessage(ChatColor.LIGHT_PURPLE + "/k chat " + ChatColor.AQUA + "Sets kingdom chat settins (k, p, a)");
 				p.sendMessage(ChatColor.LIGHT_PURPLE + "/k unclaim " + ChatColor.AQUA + "unclaims a patch of land from your kingdom");
 				p.sendMessage(ChatColor.LIGHT_PURPLE + "/k invade " + ChatColor.AQUA + "challenges the champion of an enemy kingdom for a piece of their land.");
 				p.sendMessage(ChatColor.LIGHT_PURPLE + "/k show [kingdom] " + ChatColor.AQUA + "shows a kingdom's info");
@@ -921,7 +924,37 @@ public class Kingdoms extends JavaPlugin implements Listener{
 			}else{
 				p.sendMessage(ChatColor.RED + "Only kingdom king can set the kingdom home!");
 			}
-			}else if(args[0].equalsIgnoreCase("mod")){
+			}else if(args[0].equalsIgnoreCase("chat")){
+				
+				if(args.length == 2){
+					if(args[1].equalsIgnoreCase("p") || args[1].equalsIgnoreCase("public")){
+						this.setChatOption(p, "public");
+						p.sendMessage(ChatColor.AQUA + "Chat set to public.");
+					}else if(args[1].equalsIgnoreCase("a") || args[1].equalsIgnoreCase("ally")){
+					if(hasKingdom(p)){	
+						this.setChatOption(p, "ally");
+						p.sendMessage(ChatColor.AQUA + "Chat set to allies.");
+					}else{
+						p.sendMessage(ChatColor.RED + "You need a kingdom to toggle private ally kingdoms chat!");
+					}
+					}if(args[1].equalsIgnoreCase("f") || 
+							args[1].equalsIgnoreCase("kingdom")||
+							args[1].equalsIgnoreCase("k") ||
+							args[1].equalsIgnoreCase("faction")){
+					if(hasKingdom(p)){	
+						p.sendMessage(ChatColor.AQUA + "Chat set to kingdom.");
+						this.setChatOption(p, "kingdom");
+					}else{
+						p.sendMessage(ChatColor.RED + "You need a kingdom to toggle private kingdom chat!");
+					}
+					}else{
+						p.sendMessage(ChatColor.RED + "Only the options k, p and a are allowed.");
+					}
+				}else{
+					p.sendMessage(ChatColor.AQUA + "Current Chat Group: " + ChatColor.GOLD + getChatOption(p));
+				}
+				
+				}else if(args[0].equalsIgnoreCase("mod")){
 				if(isKing(p)){
 				if(args.length == 2){
 					if(!args[1].equalsIgnoreCase(p.getName())){
@@ -1668,10 +1701,12 @@ public class Kingdoms extends JavaPlugin implements Listener{
 		kingdoms.set(tag, null);
 		if(members.size() > 0){
 		for(OfflinePlayer p: members){
+			if(p != null){
 			players.set(p.getUniqueId().toString() + ".kingdom", "");
 			if(p.isOnline()){
 				((Player) p).sendMessage(ChatColor.RED + "Your kingdom was disbanded!");
 			}
+		}
 		}
 	}
 		saveKingdoms();
@@ -1816,6 +1851,22 @@ public class Kingdoms extends JavaPlugin implements Listener{
 	public void messageKingdomPlayers(String kingdom, String message){
 		for(Player p:getKingdomOnlineMembers(kingdom)){
 			p.sendMessage(message);
+		}
+	}
+	@EventHandler
+	public void onPlayerChat(AsyncPlayerChatEvent event){
+		Player p = event.getPlayer();
+		if(getChatOption(p).equals("kingdom")){
+			event.setCancelled(true);
+			this.messageKingdomPlayers(getKingdom(p), ChatColor.GREEN + p.getName() + " " + event.getMessage());
+		}else if(getChatOption(p).equals("ally")){
+			event.setCancelled(true);
+			
+			this.messageKingdomPlayers(getKingdom(p), ChatColor.LIGHT_PURPLE + getKingdom(p) + " [" + p.getName() + "] " + event.getMessage());
+			
+			for(String ally: getAllies(getKingdom(p))){
+			    messageKingdomPlayers(ally, ChatColor.LIGHT_PURPLE + getKingdom(p) + " [" + p.getName() + "] " + event.getMessage());
+			}
 		}
 	}
 	
@@ -2082,6 +2133,21 @@ public class Kingdoms extends JavaPlugin implements Listener{
 		String sloc = locationToString(loc);
 		kingdoms.set(kingdom + ".nexus-block", sloc);
 		saveKingdoms();
+	}
+	
+	public String getChatOption(Player p){
+		String option = "public";
+		if(this.chatoption.containsKey(p.getUniqueId())){
+			return this.chatoption.get(p.getUniqueId());
+		}else{
+			return option;
+		}
+		
+		
+	}
+	
+	public void setChatOption(Player p, String s){
+		chatoption.put(p.getUniqueId(), s);
 	}
 	
 	public void displayMap(Player p){
@@ -2587,16 +2653,7 @@ public class Kingdoms extends JavaPlugin implements Listener{
 				champions.remove(event.getEntity().getUniqueId());
 				duelpairs.remove(event.getEntity().getUniqueId());
 			 p.sendMessage(ChatColor.GREEN + "You have successfully conquered " + getChunkKingdom(champions.get(event.getEntity().getUniqueId())) + "'s land. ");
-		
-			 String attacked = getChunkKingdom(champions.get(event.getEntity().getUniqueId()));
-			 Chunk nexuschunk = stringToLocation(kingdoms.getString(attacked + ".nexus-block")).getChunk();
-			 
-			 if(event.getEntity().getLocation().getChunk().equals(nexuschunk)){
-				 
-				 kingdoms.set(attacked + ".nexus-block", 0);
-				 p.sendMessage(ChatColor.GREEN + attacked + "'s nexus is now under siege by you! ");
-				 
-					}
+			
 			}else{
 			event.getEntity().getLastDamageCause().setDamage(0.0);
 		}
@@ -2696,6 +2753,14 @@ public class Kingdoms extends JavaPlugin implements Listener{
 		
 		}
 		}
+	}
+	
+	public ArrayList<String> getAllies(String kingdom){
+		ArrayList<String> allies = new ArrayList<String>();
+          for(String ally: kingdoms.getStringList(kingdom + ".allies")){
+        	  allies.add(ally);
+          }
+		return allies;
 	}
 	
 	public Location getNexusLocation(String kingdom){
