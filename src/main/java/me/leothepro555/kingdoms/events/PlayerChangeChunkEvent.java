@@ -6,7 +6,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 public class PlayerChangeChunkEvent extends Event {
-
+	
 	private Player p;
 	private Chunk from;
 	private Chunk to;
@@ -18,11 +18,11 @@ public class PlayerChangeChunkEvent extends Event {
 	}
 	
 	public HandlerList getHandlers() {
-	        return handlers;
+		return handlers;
 	}
-	 
+	
 	public static HandlerList getHandlerList() {
-	        return handlers;
+		return handlers;
 	}
 	
 	public Player getPlayer(){
@@ -32,7 +32,7 @@ public class PlayerChangeChunkEvent extends Event {
 	public Chunk getFromChunk(){
 		return from;
 	}
-
+	
 	public Chunk getToChunk(){
 		return to;
 	}
