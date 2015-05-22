@@ -3,7 +3,7 @@ machine:
     version: oraclejdk8
 general:
   artifacts:
-    - "target/kingdoms-0.10.jar"
+    - "target/kingdoms-0.12.jar"
 test:
   override:
     - mvn install

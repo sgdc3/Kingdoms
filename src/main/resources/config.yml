@@ -24,9 +24,18 @@ items-needed-for-one-resource-point: 10
 
 #put them in this manner [Item Name],[resource point value]
 special-item-cases:
-- IRON_INGOT,1
-- GOLD_INGOT,1
-- EMERALD,2
-- DIAMOND,3
+- IRON_INGOT,30
+- GOLD_INGOT,20
+- EMERALD,50
+- DIAMOND,50
 
+#Land limit per member. Amount of land a kingdom can have for each member they have. (Including king)
+land-per-member: 5
 
+#nexus unreplaceable things. When doing /k nexus, these blocks can't be replaced.
+#Get the block name with Essentials' /itemdb
+unreplaceableblocks:
+- BEDROCK
+- OBSIDIAN
+- CHEST
+- ENDERCHEST

@@ -5,7 +5,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 public class PlayerJoinKingdomEvent extends Event{
-   
+
 	private OfflinePlayer p;
 	private String kingdom;
 	private String before;
@@ -17,31 +17,23 @@ public class PlayerJoinKingdomEvent extends Event{
 		this.before = before;
 	}
 	
-	 public HandlerList getHandlers() {
-	        return handlers;
-	    }
-	 
-	    public static HandlerList getHandlerList() {
-	        return handlers;
-	    }
-
-		public OfflinePlayer getPlayer() {
-			return p;
-		}
-
-		public String getKingdom() {
-			return kingdom;
-		}
-
-		public String getBefore() {
-			return before;
-		}
-
-
-
-	    
-	    
-	    
-	    
+	public HandlerList getHandlers() {
+		return handlers;
+	}
 	
+	public static HandlerList getHandlerList() {
+		return handlers;
+	}
+	
+	public OfflinePlayer getPlayer() {
+		return p;
+	}
+	
+	public String getKingdom() {
+		return kingdom;
+	}
+	
+	public String getBefore() {
+		return before;
+	}
 }

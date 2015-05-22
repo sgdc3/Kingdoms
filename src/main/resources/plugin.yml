@@ -1,6 +1,6 @@
 name: Kingdoms
 author: Hex_27
-version: 2
+version: 0.12
 softdepend: [WorldGuard, WorldEdit]
 description: Conquer lands with a mighty Kingdom!
 main: me.leothepro555.kingdoms.main.Kingdoms
