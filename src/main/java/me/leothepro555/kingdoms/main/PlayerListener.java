@@ -1,13 +1,17 @@
 package me.leothepro555.kingdoms.main;
 
+import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class PlayerListener implements Listener{
@@ -19,8 +23,32 @@ public class PlayerListener implements Listener{
 	}
 	
 	@EventHandler
+	public void onPlayerLeave(PlayerQuitEvent event){
+		Player p = event.getPlayer();
+		if(plugin.duelpairs.containsValue(p.getUniqueId())){
+		UUID championuuid = null;
+		for(UUID uuid: plugin.duelpairs.keySet()){
+			if(plugin.duelpairs.get(uuid).equals(p.getUniqueId())){
+				championuuid = uuid;
+				break;
+			}
+		}
+		plugin.duelpairs.remove(championuuid);
+		plugin.champions.remove(championuuid);
+		for(Entity e:p.getNearbyEntities(30, 30, 30)){
+			
+			if(e instanceof Player){
+				Player plr = (Player) e;
+				plr.sendMessage(ChatColor.RED + "The invader " + p.getName() + " has lost to the champion! Invasion failed!");
+			}
+			
+		}
+	}
+	}
+	
+	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event){
-		if(plugin.players.getString(event.getPlayer().getUniqueId().toString() + ".ign") == null){
+		if(!plugin.players.isSet(event.getPlayer().getUniqueId().toString())){
 			plugin.players.set(event.getPlayer().getUniqueId().toString() + ".ign", event.getPlayer().getName());
 			plugin.players.set(event.getPlayer().getUniqueId().toString() + ".kingdom", "");
 			plugin.savePlayers();

@@ -85,7 +85,33 @@ public class Kingdoms extends JavaPlugin implements Listener{
 		savePowerups();
 		this.misupgrades.options().copyDefaults(false);
 		saveMisupgrades();
+		this.chest.options().copyDefaults(false);
+		saveChests();
+//		
+//		if(!getConfig().isSet("versionupgrade1")){
+//			getConfig().set("versionupgrade1", false);
+//			getConfig().set("max.nexusupgrades.dmg-boost", 50);
+//			getConfig().set("max.nexusupgrades.regen-boost", 50);
+//			getConfig().set("max.nexusupgrades.dmg-reduc", 50);
+//			getConfig().set("cost.nexusupgrades.dmg-boost", 50);
+//			getConfig().set("cost.nexusupgrades.regen-boost", 100);
+//			getConfig().set("cost.nexusupgrades.dmg-reduc", 50);
+//			saveDefaultConfig();
+//		}else {
+//			
+//			if(getConfig().getBoolean("versionupgrade1")){
+//			getConfig().set("versionupgrade1", false);
+//			getConfig().set("max.nexusupgrades.dmg-boost", 50);
+//			getConfig().set("max.nexusupgrades.regen-boost", 50);
+//			getConfig().set("max.nexusupgrades.dmg-reduc", 50);
+//			getConfig().set("cost.nexusupgrades.dmg-boost", 50);
+//			getConfig().set("cost.nexusupgrades.regen-boost", 100);
+//			getConfig().set("cost.nexusupgrades.dmg-reduc", 50);
+//			saveDefaultConfig();
+//		}
+//		}
 		int num = 0;
+		
 		for(String kingdom: kingdoms.getKeys(false)){
 			num++;
 			if(kingdoms.getString(kingdom + ".nexus-block") != null){
@@ -104,7 +130,6 @@ public class Kingdoms extends JavaPlugin implements Listener{
 					+ "Did you modify the kingdoms.yml file lately? If " + kingdom + " is not supposed to exist, "
 					+ "delete it in the kingdoms.yml file.");
 		}
-			if(!kingdoms.isSet("land")){
 				int landnum = 0;
 				for(String s : land.getKeys(false)){
 					if(land.getString(s).equals(kingdom)){
@@ -113,7 +138,18 @@ public class Kingdoms extends JavaPlugin implements Listener{
 				}
 				kingdoms.set(kingdom + ".land", landnum);
 				saveKingdoms();
-				}
+				
+			
+			if(!kingdoms.isSet(kingdom + ".chestsize")){
+				kingdoms.set(kingdom + ".chestsize", 9);
+				saveKingdoms();
+			}
+			
+			if(!chest.isSet(kingdom)){
+				ArrayList<ItemStack> items = new ArrayList<ItemStack>();
+				chest.set(kingdom, items);
+				saveChests();
+			}
 			
 			if(misupgrades.get(kingdom + ".anticreeper") == null){
 				misupgrades.set(kingdom + ".antitrample", false);
@@ -500,6 +536,7 @@ public class Kingdoms extends JavaPlugin implements Listener{
 			
 			
 			}else if(args[0].equalsIgnoreCase("create")){
+				if(p.hasPermission("kingdoms.create")){
 				if(!hasKingdom(p)){
 				if(args.length == 2){
 	    		if(kingdoms.get(args[1]) == null){
@@ -523,6 +560,7 @@ public class Kingdoms extends JavaPlugin implements Listener{
 				}
 			}else{
 				p.sendMessage(ChatColor.RED + "You already have a kingdom! You must leave before creating a new Kingdom");
+			}
 			}
 			}else if(args[0].equalsIgnoreCase("nexus")){
 				if(hasKingdom(p)){
@@ -916,6 +954,7 @@ public class Kingdoms extends JavaPlugin implements Listener{
 				if(getChunkKingdom(p.getLocation().getChunk()) != null &&
 						getChunkKingdom(p.getLocation().getChunk()).equals(getKingdom(p))){
 				kingdoms.set(getKingdom(p) + ".home", locationToString(p.getLocation()));
+				saveKingdoms();
 				p.sendMessage(ChatColor.GREEN + "Kingdom home set to your location");
 			}else{
 				p.sendMessage(ChatColor.RED + "You can't set your kingdom home outside your land!");
@@ -1363,6 +1402,9 @@ public class Kingdoms extends JavaPlugin implements Listener{
 			p.sendMessage(ChatColor.RED + "Nexus placing cancelled.");
 		}
 		}
+		if(adminmode.contains(p.getUniqueId())){
+			return;
+		}
 
 		if(event.getAction() == Action.RIGHT_CLICK_BLOCK){
 			if(event.getClickedBlock().getType() == Material.WOOD_DOOR ||
@@ -1409,7 +1451,9 @@ public class Kingdoms extends JavaPlugin implements Listener{
             
             if(kingdoms.getKeys(false).contains(getChunkKingdom(event.getToChunk()))){
 			p.sendMessage(ChatColor.AQUA + "Entering " + ChatColor.YELLOW + getChunkKingdom(event.getToChunk()));
-            }else if(!kingdoms.getKeys(false).contains(getChunkKingdom(event.getToChunk()))){
+            }else if(!kingdoms.getKeys(false).contains(getChunkKingdom(event.getToChunk())) &&
+           		 !getChunkKingdom(event.getToChunk()).equals("SafeZone")&&
+           		 !getChunkKingdom(event.getToChunk()).equals("WarZone")){
             	if(getChunkKingdom(event.getFromChunk()) != null){
             		p.sendMessage(ChatColor.AQUA + "Entering unoccupied land");
             		}
@@ -1469,6 +1513,9 @@ public class Kingdoms extends JavaPlugin implements Listener{
 	
 	@EventHandler
 	public void onBlockUse(PlayerInteractEvent event){
+		if(adminmode.contains(event.getPlayer().getUniqueId())){
+			return;
+		}
 		if(event.getAction() == Action.RIGHT_CLICK_BLOCK){
 			if(event.getClickedBlock().getType() == Material.CHEST||
 					event.getClickedBlock().getType() == Material.FURNACE||
@@ -1496,14 +1543,18 @@ public class Kingdoms extends JavaPlugin implements Listener{
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent event){
 		Player p = event.getPlayer();
+		 if(getChunkKingdom(event.getBlock().getChunk()) != null){
         if(kingdoms.getKeys(false).contains(getChunkKingdom(event.getBlock().getChunk()))){
 		
-         }else if(!kingdoms.getKeys(false).contains(getChunkKingdom(event.getBlock().getChunk()))){
+         }else if(!kingdoms.getKeys(false).contains(getChunkKingdom(event.getBlock().getChunk())) &&
+        		 !getChunkKingdom(event.getBlock().getChunk()).equals("SafeZone")&&
+        		 !getChunkKingdom(event.getBlock().getChunk()).equals("WarZone")){
          	if(getChunkKingdom(event.getBlock().getChunk()) != null){
          		p.sendMessage(ChatColor.AQUA + "Entering unoccupied land");
          		}
          	emptyCurrentPosition(event.getBlock().getChunk());
          }
+	}
 		if(placingnexusblock.contains(event.getPlayer().getUniqueId())){
 			event.setCancelled(true);
 			return;
@@ -1524,14 +1575,18 @@ public class Kingdoms extends JavaPlugin implements Listener{
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event){
 		Player p = event.getPlayer();
+		if(getChunkKingdom(event.getBlock().getChunk()) != null){
 		  if(kingdoms.getKeys(false).contains(getChunkKingdom(event.getBlock().getChunk()))){
 				
-	         }else if(!kingdoms.getKeys(false).contains(getChunkKingdom(event.getBlock().getChunk()))){
+	         }else if(!kingdoms.getKeys(false).contains(getChunkKingdom(event.getBlock().getChunk())) &&
+	        		 !getChunkKingdom(event.getBlock().getChunk()).equals("SafeZone")&&
+	        		 !getChunkKingdom(event.getBlock().getChunk()).equals("WarZone")){
 	         	if(getChunkKingdom(event.getBlock().getChunk()) != null){
 	         		p.sendMessage(ChatColor.AQUA + "Entering unoccupied land");
 	         		}
 	         	emptyCurrentPosition(event.getBlock().getChunk());
 	         }
+	}
 		if(event.getBlock().getType() == Material.BEACON){
 			if(event.getBlock().hasMetadata("nexusblock")){
 				event.setCancelled(true);
@@ -1658,6 +1713,7 @@ public class Kingdoms extends JavaPlugin implements Listener{
 		kingdoms.set(tag + ".might", 0);
 		kingdoms.set(tag + ".nexus-block", 0);
 		kingdoms.set(tag + ".home", 0);
+		kingdoms.set(tag + ".chestsize", 9);
 		kingdoms.set(tag + ".members", list);
 		kingdoms.set(tag + ".mods", list);
 		kingdoms.set(tag + ".enemies", list);
@@ -3068,6 +3124,18 @@ if(b){
 		    try {
 		      this.misupgrades.save(this.misupgradesfile);
 		      this.misupgrades = YamlConfiguration.loadConfiguration(this.misupgradesfile);
+		    } catch (IOException e) {
+		      e.printStackTrace();
+		    }
+		  }
+	  
+	  public File chestfile = new File("plugins/Kingdoms/kingdomchests.yml");
+	  public FileConfiguration chest = YamlConfiguration.loadConfiguration(this.chestfile);
+	  
+	  public void saveChests() {
+		    try {
+		      this.chest.save(this.chestfile);
+		      this.chest = YamlConfiguration.loadConfiguration(this.chestfile);
 		    } catch (IOException e) {
 		      e.printStackTrace();
 		    }
