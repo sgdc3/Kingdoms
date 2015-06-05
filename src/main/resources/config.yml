@@ -32,6 +32,8 @@ special-item-cases:
 #Land limit per member. Amount of land a kingdom can have for each member they have. (Including king)
 land-per-member: 5
 
+
+
 #nexus unreplaceable things. When doing /k nexus, these blocks can't be replaced.
 #Get the block name with Essentials' /itemdb
 unreplaceableblocks:
@@ -39,3 +41,18 @@ unreplaceableblocks:
 - OBSIDIAN
 - CHEST
 - ENDERCHEST
+
+#Costs for upgrades found in the nexus
+cost:
+   nexusupgrades:
+       dmg-boost: 50
+       dmg-reduc: 50
+       regen-boost: 50
+
+#Maximum levels for upgrades found in the nexus
+max:
+   nexusupgrades:
+       dmg-boost: 50
+       dmg-reduc: 50
+       regen-boost: 100
+

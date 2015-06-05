@@ -1,5 +1,8 @@
 package me.leothepro555.kingdoms.main;
 
+import java.util.ArrayList;
+import java.util.Random;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -8,7 +11,6 @@ import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -75,26 +77,30 @@ public class KingdomPowerups implements Listener{
 		}
 	}
 	}
-	
+	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onEntityExplode(EntityExplodeEvent event){
+		
+		ArrayList<Block> creeperblock = new ArrayList<Block>();
+		
 		for(final Block b: event.blockList()){
 			if(plugin.getChunkKingdom(b.getChunk()) != null){
 				if(event.getEntity() instanceof Creeper){
 				if(hasMisUpgrade(plugin.getChunkKingdom(b.getChunk()), "anticreeper")){
-					event.blockList().remove(b);
+					creeperblock.add(b);
 				}
-				}else if(event.getEntity() instanceof TNTPrimed){
+				}else{
 					if(hasMisUpgrade(plugin.getChunkKingdom(b.getChunk()), "bombshards")){
-						final Block block = b;
+						final Material mat = b.getType();
+						final byte data = b.getData();
 						
 						Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-							  @SuppressWarnings("deprecation")
+							  
 							public void run() {
-							   b.setType(block.getType());
-							   b.setData(block.getData());
+							   b.setType(mat);
+							   b.setData(data);
 							   }
-							}, 200);
+							}, randInt(200,400));
 					}
 					if(plugin.getChunkKingdom(b.getChunk()) != null){
 					String kingdom = plugin.getChunkKingdom(b.getChunk());
@@ -116,6 +122,30 @@ public class KingdomPowerups implements Listener{
 				}
 			}
 		}
+		
+		for(Block block:creeperblock){
+			event.blockList().remove(block);
+		}
+		Entity q = event.getEntity();
+		if(hasMisUpgrade(plugin.getChunkKingdom(q.getLocation().getChunk()), "bombshards")){
+		if(plugin.getChunkKingdom(q.getLocation().getChunk()) != null){
+		String kingdom = plugin.getChunkKingdom(q.getLocation().getChunk());
+		for(Entity e: event.getEntity().getNearbyEntities(10, 10, 10)){
+			if(e instanceof Player){
+				Player player = (Player) e;
+				if(plugin.hasKingdom(player)){
+					
+					if(!plugin.getKingdom(player).equals(kingdom)){
+					if(((Damageable)player).getHealth() >= 0){	
+						player.setHealth(((Damageable)player).getHealth() -1.0);
+					}	
+					}
+					
+				}
+			}
+		}
+	}
+	}
 		
 	}
 	
@@ -185,6 +215,16 @@ public class KingdomPowerups implements Listener{
 	}
 	}
 	
+	
+	
+	public int randInt(int min, int max) {
+
+	    Random rand = new Random();
+
+	    int randomNum = rand.nextInt((max - min) + 1) + min;
+
+	    return randomNum;
+	}
 	
 	
 }
