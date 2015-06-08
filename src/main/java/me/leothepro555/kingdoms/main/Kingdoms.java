@@ -87,29 +87,7 @@ public class Kingdoms extends JavaPlugin implements Listener{
 		saveMisupgrades();
 		this.chest.options().copyDefaults(false);
 		saveChests();
-//		
-//		if(!getConfig().isSet("versionupgrade1")){
-//			getConfig().set("versionupgrade1", false);
-//			getConfig().set("max.nexusupgrades.dmg-boost", 50);
-//			getConfig().set("max.nexusupgrades.regen-boost", 50);
-//			getConfig().set("max.nexusupgrades.dmg-reduc", 50);
-//			getConfig().set("cost.nexusupgrades.dmg-boost", 50);
-//			getConfig().set("cost.nexusupgrades.regen-boost", 100);
-//			getConfig().set("cost.nexusupgrades.dmg-reduc", 50);
-//			saveDefaultConfig();
-//		}else {
-//			
-//			if(getConfig().getBoolean("versionupgrade1")){
-//			getConfig().set("versionupgrade1", false);
-//			getConfig().set("max.nexusupgrades.dmg-boost", 50);
-//			getConfig().set("max.nexusupgrades.regen-boost", 50);
-//			getConfig().set("max.nexusupgrades.dmg-reduc", 50);
-//			getConfig().set("cost.nexusupgrades.dmg-boost", 50);
-//			getConfig().set("cost.nexusupgrades.regen-boost", 100);
-//			getConfig().set("cost.nexusupgrades.dmg-reduc", 50);
-//			saveDefaultConfig();
-//		}
-//		}
+
 		int num = 0;
 		
 		for(String kingdom: kingdoms.getKeys(false)){
@@ -419,6 +397,9 @@ public class Kingdoms extends JavaPlugin implements Listener{
 						if(hasKingdom(Bukkit.getOfflinePlayer(args[2]))){
 							kingdom = getKingdom(Bukkit.getOfflinePlayer(args[2]));
 						}
+					}else{
+						p.sendMessage(ChatColor.RED + "The kingdom or player " + args[2] + " doesn't exist.");
+						return false;
 					}
 						
 						String allies = "";
@@ -506,7 +487,7 @@ public class Kingdoms extends JavaPlugin implements Listener{
 						+ "The nexus block is the center of your operations: You can convert blocks to resourcepoints, upgrade kingdom bonuses"
 						+ " and upgrade champion stats");
 				p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "An enemy can steal up to 20 resource points each mine. Nexus blocks can be raided"
-						+ " even if your nexus block is on your location");
+						+ " even if your nexus block is on your land");
 				
 				p.sendMessage(ChatColor.GOLD + "Kingdom might is how powerful your kingdom is. Might grows as you have more land");
 	
@@ -622,7 +603,7 @@ public class Kingdoms extends JavaPlugin implements Listener{
 		            	 p.sendMessage(ChatColor.RED + "You can't unclaim your nexus land! You must move your nexus with /k nexus before unclaiming this patch of land!");
 		             }
 					}else{
-						p.sendMessage(ChatColor.RED + "Your rank is too low to claim land!");
+						p.sendMessage(ChatColor.RED + "Your rank is too low to uclaim land!");
 					}
 					}else{
 						p.sendMessage(ChatColor.RED + "You are not in a kingdom!");
@@ -795,6 +776,7 @@ public class Kingdoms extends JavaPlugin implements Listener{
 					}
 					}else{
 						p.sendMessage(ChatColor.RED + "The player or kingdom " + args[1] + " does not exist or is offline");
+					return false;
 					}
 							}else{
 								
@@ -1084,6 +1066,7 @@ public class Kingdoms extends JavaPlugin implements Listener{
 							allyKingdom(getKingdom(p), kingdomtoally);
 							p.sendMessage(ChatColor.GREEN + "You have established an alliance with " + kingdomtoally);
 							 messageKingdomPlayers(getKingdom(p), ChatColor.GREEN + "You are now allies with " + kingdomtoally);
+							 messageKingdomPlayers(kingdomtoally, ChatColor.GREEN + getKingdom(p) + " wants to be allies with you");
 							}else{
 							p.sendMessage(ChatColor.RED + "You can't ally yourself.");
 						}
@@ -1111,6 +1094,7 @@ public class Kingdoms extends JavaPlugin implements Listener{
 						allyKingdom(getKingdom(p), kingdomtoally);
 						 messageKingdomPlayers(getKingdom(p), ChatColor.GREEN + "You are now allies with " + kingdomtoally);
 						p.sendMessage(ChatColor.GREEN + "You have established an alliance with " + kingdomtoally);
+						messageKingdomPlayers(kingdomtoally, ChatColor.GREEN + getKingdom(p) + " wants to be allies with you");
 					}else{
 						p.sendMessage(ChatColor.RED + "You can't ally yourself.");
 					}
@@ -1140,11 +1124,12 @@ public class Kingdoms extends JavaPlugin implements Listener{
 						if(this.kingdoms.getKeys(false).contains(kingdomtoally)){
 							if(!kingdomtoally.equals(getKingdom(p))){
 						if(isAlly(kingdomtoally, p)){
-							p.sendMessage(ChatColor.RED + "You have severed alliance ties with " + kingdomtoally + " without their knowledge.");
+							p.sendMessage(ChatColor.RED + "You have severed alliance ties with " + kingdomtoally);
 						    
 						}
 						
 						 messageKingdomPlayers(getKingdom(p), ChatColor.RED + "You are now enemies with " + kingdomtoally);
+						 messageKingdomPlayers(kingdomtoally, ChatColor.RED + "You are now enemies with " + getKingdom(p));
 							enemyKingdom(getKingdom(p), kingdomtoally);
 							p.sendMessage(ChatColor.GREEN + "You are now enemies with " + kingdomtoally);
 						}else{
@@ -1173,6 +1158,7 @@ public class Kingdoms extends JavaPlugin implements Listener{
 					
 						enemyKingdom(getKingdom(p), kingdomtoally);
 						messageKingdomPlayers(getKingdom(p), ChatColor.RED + "You are now enemies with " + kingdomtoally);
+						messageKingdomPlayers(kingdomtoally, ChatColor.RED + "You are now enemies with " + getKingdom(p));
 						p.sendMessage(ChatColor.RED + "You are now enemies with " + kingdomtoally);
 					}else{
 						p.sendMessage(ChatColor.RED + "You can't enemy yourself.");
@@ -1393,7 +1379,9 @@ public class Kingdoms extends JavaPlugin implements Listener{
 			}
 			}else{
 				p.sendMessage(ChatColor.RED + "You can't replace " + event.getClickedBlock().getType().toString().toUpperCase() + " with your nexus. Nexus placing cancelled");
+			if(placingnexusblock.contains(p.getUniqueId())){	
 				placingnexusblock.remove(p.getUniqueId());
+			}
 			}
 			
 		}else if(event.getAction() == Action.LEFT_CLICK_BLOCK||
@@ -1428,10 +1416,16 @@ public class Kingdoms extends JavaPlugin implements Listener{
 	}
 	
 	@EventHandler
-	public void onChunkChange(PlayerChangeChunkEvent event){
+	public void onChunkChange(final PlayerChangeChunkEvent event){
 		Player p = event.getPlayer();
 		if(mapmode.contains(event.getPlayer().getUniqueId())){
-			displayMap(event.getPlayer());
+			 Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+                 public void run() {
+                	 displayMap(event.getPlayer());
+                 }
+             }, 1L);
+			
+			
 		}
 		if(rapidclaiming.contains(event.getPlayer().getUniqueId())){
 			claimCurrentPosition(event.getPlayer());
@@ -1517,27 +1511,31 @@ public class Kingdoms extends JavaPlugin implements Listener{
 			return;
 		}
 		if(event.getAction() == Action.RIGHT_CLICK_BLOCK){
-			if(event.getClickedBlock().getType() == Material.CHEST||
-					event.getClickedBlock().getType() == Material.FURNACE||
-					event.getClickedBlock().getType() == Material.HOPPER||
-					event.getClickedBlock().getType() == Material.ENDER_CHEST||
-					event.getClickedBlock().getType() == Material.DROPPER||
-					event.getClickedBlock().getType() == Material.DISPENSER){
-				if(getChunkKingdom(event.getPlayer().getLocation().getChunk()) != null){
+			if(event.getClickedBlock().getType() == Material.BEACON){
+				if(event.getClickedBlock().hasMetadata("nexusblock")){
+				return;	
+				}
+				}
+				if(getChunkKingdom(event.getClickedBlock().getChunk()) != null){
 					if(getKingdom(event.getPlayer()) == null){
 						event.setCancelled(true);
-						event.getPlayer().sendMessage(ChatColor.RED + "You can't open storage blocks in " + getChunkKingdom(event.getPlayer().getLocation().getChunk()) + "'s land!");
+						event.getPlayer().sendMessage(ChatColor.RED + "You can't interact in " + getChunkKingdom(event.getClickedBlock().getLocation().getChunk()) + "'s land!");
 						return;
 					}
 						
-					if(!getChunkKingdom(event.getPlayer().getLocation().getChunk()).equals(getKingdom(event.getPlayer()))){
-						event.getPlayer().sendMessage(ChatColor.RED + "You can't open storage blocks in " + getChunkKingdom(event.getPlayer().getLocation().getChunk()) + "'s land!");
+					if(!getChunkKingdom(event.getClickedBlock().getChunk()).equals(getKingdom(event.getPlayer()))){
+						event.getPlayer().sendMessage(ChatColor.RED + "You can't interact in " + getChunkKingdom(event.getClickedBlock().getLocation().getChunk()) + "'s land!");
 			        	event.setCancelled(true);
 				        return;
 					}
 				}
-			}
+			
 		}
+			
+		
+		
+		
+		
 	}
 	
 	@EventHandler
@@ -1822,6 +1820,7 @@ public class Kingdoms extends JavaPlugin implements Listener{
 	public void quitKingdom(String kingdom, OfflinePlayer p){
 		PlayerJoinKingdomEvent pcce = new PlayerJoinKingdomEvent(p, null, kingdom);
 		Bukkit.getServer().getPluginManager().callEvent(pcce);
+		if(kingdoms.getStringList(kingdom + ".members") != null){
 		if(kingdoms.getStringList(kingdom + ".members").contains(p.getUniqueId().toString())){
 		String puuid = p.getUniqueId().toString();
 		unModPlayer(kingdom, p.getUniqueId());
@@ -1833,6 +1832,10 @@ public class Kingdoms extends JavaPlugin implements Listener{
 		
 		saveKingdoms();
 		
+		players.set(p.getUniqueId().toString() + ".kingdom", "");
+		savePlayers();
+	}
+	}else{
 		players.set(p.getUniqueId().toString() + ".kingdom", "");
 		savePlayers();
 	}
@@ -2206,15 +2209,18 @@ public class Kingdoms extends JavaPlugin implements Listener{
 		chatoption.put(p.getUniqueId(), s);
 	}
 	
+	@SuppressWarnings("unused")
 	public void displayMap(Player p){
 		String com1 = "";
 		String com2 = "";
 		String com3 = "";
+		String[] row = {"", "", "", "", "", ""};
+
 		ArrayList<String> compass = AsciiCompass.getAsciiCompass(AsciiCompass.getCardinalDirection(p), ChatColor.AQUA, ChatColor.GRAY + "");
 		
-		com1 = compass.get(0);
-		com2 = compass.get(1);
-		com3 = compass.get(2);
+		com1 = "\\W/";
+		com2 = "N+S";
+		com3 = "/E\\";
 			String cck = ChatColor.AQUA + "Unoccupied";
 			HashMap<String, ChatColor> detected = new HashMap<String, ChatColor>();
 			if(getChunkKingdom(p.getLocation().getChunk()) != null){
@@ -2233,93 +2239,64 @@ public class Kingdoms extends JavaPlugin implements Listener{
 			    	cck = ChatColor.RED + getChunkKingdom(p.getLocation().getChunk());
 			    	detected.put(getChunkKingdom(p.getLocation().getChunk()), ChatColor.RED);
 			    }else{
-			    	ChatColor rc = randomColor();
+			    	ChatColor rc = ChatColor.GRAY;
 			    	cck = rc + getChunkKingdom(p.getLocation().getChunk());
 			    	detected.put(getChunkKingdom(p.getLocation().getChunk()), rc);
 			    }
 			}
-			p.sendMessage(ChatColor.AQUA + "======================[" +  cck + ChatColor.AQUA + "]======================");
-			String linetext = com1+ ChatColor.WHITE;
-			int midx = p.getLocation().getChunk().getX();
-			int midz = p.getLocation().getChunk().getZ();
-			//South is positive z
-			//North is negative z
-			//West is negative x
-			//East is positive x
-			//^
-			//|
-			//-x
-			//-z  ----->
-			for (int x = 0; x <= 8; x++) {
-				
-				if(x == 0){
-					linetext = com1;
-				}else if(x == 1){
-					linetext = com2;
-					
-				}else if(x == 2){
-					linetext = com3;
-					
-				}else{
-				linetext = "";
-			}
-				for (int z = 0; z <= 45; z++) {
-					
-					if(z == 45){
-						p.sendMessage(linetext);
-                        linetext = "";
-					}else{
-						int chunkxcoord = midx;
-						int chunkzcoord = midz;
-						if(x <= 4){
-							chunkzcoord -= x;
-						}else if(x > 5){
-							chunkzcoord += x;
-						}
-						
-						if(z <= 21){
-						    chunkzcoord += z;	
-						}else if(z > 22){
-							chunkzcoord -= z;
-						}
-						Chunk c = p.getWorld().getChunkAt(chunkxcoord, chunkzcoord);
-						String chunkx = ChatColor.GRAY + "-";
-						if(getChunkKingdom(c) != null){
-						    if(getChunkKingdom(c).equals(getKingdom(p))){
-						    	chunkx = ChatColor.GREEN + "x";
-						    	detected.put(getChunkKingdom(c), ChatColor.GREEN);
-						    }else if(isKEnemy(getKingdom(p), getChunkKingdom(c))){
-						    	chunkx = ChatColor.RED + "x";
-						    	detected.put(getChunkKingdom(c), ChatColor.RED);
-						    }else if(isKAlly(getKingdom(p), getChunkKingdom(c))){
-						    	chunkx = ChatColor.LIGHT_PURPLE + "x";
-						    	detected.put(getChunkKingdom(c), ChatColor.LIGHT_PURPLE);
-						    }else if(getChunkKingdom(c).equals("SafeZone")){
-						    	chunkx = ChatColor.GOLD + "x";
-						    	detected.put(getChunkKingdom(c), ChatColor.GOLD);
-						    }else if(getChunkKingdom(c).equals("WarZone")){
-						    	chunkx = ChatColor.RED + "x";
-						    	detected.put(getChunkKingdom(c), ChatColor.RED);
-						    }else{
-						    	ChatColor rc = randomColor();
-						    	chunkx = rc + getChunkKingdom(c);
-						    	detected.put(getChunkKingdom(c), rc);
-						    }
-						}
-						if(x == 8/2 && z == 22){
-							chunkx = ChatColor.WHITE + "+";
-						}
-						
-						if(z <= 2){
-							if(x <= 2){
-								chunkx = "";
-							}
-						}
-						
-						linetext += chunkx;
-					}
+			p.sendMessage(ChatColor.AQUA + "============[" +  cck + ChatColor.AQUA + "]============");
+			p.sendMessage(com1 + "          " + ChatColor.GREEN + "Your Kingdom" + "                 " + ChatColor.GRAY + "Unidentified Kingdom");
+			p.sendMessage(com2 + "          " + ChatColor.RED + "Enemies of your Kingdom" + "   " + ChatColor.AQUA + "Unoccupied land");
+			p.sendMessage(com3 + "          " + ChatColor.LIGHT_PURPLE + "Allies of your Kingdom" + "      " + ChatColor.WHITE + "You");
+			//North: -Z
+			//South: +Z
+			//East: +X
+			//West: -X
+			int orix = p.getLocation().getChunk().getX();
+			int oriz = p.getLocation().getChunk().getZ();
+			for(int xc = 0; xc <= 4; xc++){
+				int x = xc-2;
+				for(int zc = 0; zc <= 12; zc++){
+					int z = zc-6;
+				String chunkcolor = mapIdentifyChunk(p.getWorld().getChunkAt(orix + x, oriz + z), p);
+				   if(x == 0 && z == 0){
+					chunkcolor = ChatColor.WHITE + "+";
+				   }
+				   
+				   row[xc] += chunkcolor;
+				   
 				}
+				p.sendMessage(row[xc]);
 			}
+			
+			
+			p.sendMessage(ChatColor.AQUA + "=======================================");
+			
+			
+			
+	}
+	
+	public String mapIdentifyChunk(Chunk c, Player p){
+		String cck = "x";
+		if(getChunkKingdom(c) != null){
+		    if(getChunkKingdom(c).equals(getKingdom(p))){
+		    	cck = ChatColor.GREEN + "x";
+		    }else if(isKEnemy(getKingdom(p), getChunkKingdom(c))){
+		    	cck = ChatColor.RED + "x";
+		    }else if(isKAlly(getKingdom(p), getChunkKingdom(c))){
+		    	cck = ChatColor.LIGHT_PURPLE + "x";
+		    }else if(getChunkKingdom(c).equals("SafeZone")){
+		    	cck = ChatColor.GOLD + "x";
+		    }else if(getChunkKingdom(c).equals("WarZone")){
+		    	cck = ChatColor.RED + "x";
+		    }else{
+		    	cck = ChatColor.GRAY + "x";
+		    	
+		    }
+		}else{
+			cck = ChatColor.AQUA + "x";
+		}
+		return cck;
 	}
 	
 	public void betaDisplayMap(Player p){
@@ -2523,6 +2500,26 @@ public class Kingdoms extends JavaPlugin implements Listener{
 		champions.put(champion.getUniqueId(), location.getChunk());
 		duelpairs.put(champion.getUniqueId(), p.getUniqueId());
 	    
+	}
+	
+	
+	@EventHandler
+	public void onEDEE(EntityDamageByEntityEvent event){
+		if(event.getDamager() instanceof Player){
+			if(duelpairs.containsKey(event.getEntity().getUniqueId())){
+				if(!duelpairs.containsValue(event.getDamager().getUniqueId())){
+					if(kingdoms.getInt(getChampionKingdom(event.getEntity()) + ".champion.duel") > 0){
+					event.setCancelled(true);
+					((Player) event.getDamager()).sendMessage(ChatColor.RED + "You can't damage the champion unless you're the invader!");
+				}
+				}
+			}
+		}
+	}
+	
+	public String getChampionKingdom(Entity champion){
+		
+		return getChunkKingdom(champions.get(champion.getUniqueId()));
 	}
 	
 	@EventHandler
@@ -2764,7 +2761,7 @@ public class Kingdoms extends JavaPlugin implements Listener{
 			if(!getChunkKingdom(c).equals("SafeZone")&&
 					!getChunkKingdom(c).equals("WarZone")){
 				
-			if(!isAlly(getChunkKingdom(c), p)){
+			if(!isKAlly(getKingdom(p), getChunkKingdom(c))){
 			if(hasAmtRp(getKingdom(p), 10)){
 				if(!isNexusChunk(c)){
 			p.sendMessage(ChatColor.GREEN + "Invading land! " + getChunkKingdom(c) + " is summoning their champion to defend their land!");

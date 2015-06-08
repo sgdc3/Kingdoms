@@ -16,11 +16,11 @@ public class AsciiCompass
 	{
 		N('W'),
 		NE('/'),
-		E('N'),
+		E('S'),
 		SE('\\'),
 		S('E'),
 		SW('/'),
-		W('S'),
+		W('N'),
 		NW('\\');
 		
 		public final char asciiChar;
@@ -49,15 +49,15 @@ public class AsciiCompass
 			degrees += 360;
 		
 		if (0 <= degrees && degrees < 22.5)
-			return AsciiCompass.Point.N;
+			return AsciiCompass.Point.S;
 		else if (22.5 <= degrees && degrees < 67.5)
-			return AsciiCompass.Point.NE;
+			return AsciiCompass.Point.SE;
 		else if (67.5 <= degrees && degrees < 112.5)
 			return AsciiCompass.Point.E;
 		else if (112.5 <= degrees && degrees < 157.5)
-			return AsciiCompass.Point.SE;
+			return AsciiCompass.Point.NE;
 		else if (157.5 <= degrees && degrees < 202.5)
-			return AsciiCompass.Point.S;
+			return AsciiCompass.Point.N;
 		else if (202.5 <= degrees && degrees < 247.5)
 			return AsciiCompass.Point.SW;
 		else if (247.5 <= degrees && degrees < 292.5)
@@ -65,7 +65,7 @@ public class AsciiCompass
 		else if (292.5 <= degrees && degrees < 337.5)
 			return AsciiCompass.Point.NW;
 		else if (337.5 <= degrees && degrees < 360.0)
-			return AsciiCompass.Point.N;
+			return AsciiCompass.Point.S;
 		else
 			return null;
 	}

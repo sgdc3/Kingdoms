@@ -136,7 +136,7 @@ public class KingdomPowerups implements Listener{
 				if(plugin.hasKingdom(player)){
 					
 					if(!plugin.getKingdom(player).equals(kingdom)){
-					if(((Damageable)player).getHealth() >= 0){	
+					if((((Damageable)player).getHealth() - 1.0) >= 0){	
 						player.setHealth(((Damageable)player).getHealth() -1.0);
 					}	
 					}

@@ -292,6 +292,22 @@ public class NexusBlockManager implements Listener{
 
 			}
 			
+			if(item.getItemMeta().getDisplayName().equals(ChatColor.AQUA + "Death Duel")){
+				if(plugin.kingdoms.getInt(plugin.getKingdom(p) + ".champion.duel") == 0){
+				if(plugin.hasAmtRp(plugin.getKingdom(p), 100)){
+					plugin.minusRP(plugin.getKingdom(p), 100);
+					upgradeChampion(plugin.getKingdom(p), "duel", 1);
+					p.sendMessage(ChatColor.GREEN + "Death Duel enabled!");
+				p.closeInventory();
+				openChampionMenu(p);
+				}else{
+					p.sendMessage(ChatColor.RED + "You don't have enough resource points for this upgrade!");
+				}
+			}else{
+				p.sendMessage(ChatColor.RED + "You have reached the maximum level for this upgrade");
+			}
+			}
+			
 		}else if(event.getInventory().getName().equals(ChatColor.AQUA + "Extra Upgrades")){
 			event.setCancelled(true);
 			
@@ -591,6 +607,19 @@ public class NexusBlockManager implements Listener{
 		i6m.setLore(i6l);
 		i6.setItemMeta(i6m);
 		
+		ItemStack i7 = new ItemStack(Material.GOLD_SWORD);
+		ItemMeta i7m = i7.getItemMeta();
+		i7m.setDisplayName(ChatColor.AQUA + "Death Duel");
+		ArrayList<String> i7l = new ArrayList<String>();
+		i7l.add(ChatColor.GREEN + "Only the invader can damage the champion");
+		i7l.add(ChatColor.GREEN + "and the champion will only savagely");
+		i7l.add(ChatColor.GREEN + "target the invader");
+		i7l.add(ChatColor.RED + "Enabled: " + (plugin.kingdoms.getInt(plugin.getKingdom(p) + ".champion.duel") > 0));
+		i7l.add(ChatColor.RED + "Cost: 100 resource points");
+		i7l.add(ChatColor.LIGHT_PURPLE + "Champion Upgrade");
+		i7m.setLore(i7l);
+		i7.setItemMeta(i7m);
+		
 		ItemStack r = new ItemStack(Material.HAY_BLOCK);
 		ItemMeta rm = r.getItemMeta();
 		rm.setDisplayName(ChatColor.AQUA + "Resource Points");
@@ -611,6 +640,7 @@ public class NexusBlockManager implements Listener{
 		champions.setItem(3, i4);
 		champions.setItem(4, i5);
 		champions.setItem(5, i6);
+		champions.setItem(6, i7);
 		champions.setItem(17, r);
 		champions.setItem(26, backbtn);
 		
