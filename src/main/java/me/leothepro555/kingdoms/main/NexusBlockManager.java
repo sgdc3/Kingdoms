@@ -19,6 +19,7 @@ public class NexusBlockManager implements Listener{
 
 	private Kingdoms plugin;
 	private Inventory nexusgui;
+	private Inventory kchest;
 	private Inventory dumpgui;
 	private Inventory champions;
 	private int rpi = 10;
@@ -29,7 +30,6 @@ public class NexusBlockManager implements Listener{
 			this.rpi = plugin.getConfig().getInt("items-needed-for-one-resource-point");
 		}
 	}
-	
 	@EventHandler
 	public void onPlayerClick(PlayerInteractEvent event){
 		Player p = event.getPlayer();
@@ -59,15 +59,14 @@ public class NexusBlockManager implements Listener{
 		}
 	}
 	
-	@SuppressWarnings("unused")
 	@EventHandler
 	public void onInventoryMove(InventoryClickEvent event){
-		try{
 		Player p = (Player) event.getWhoClicked();
 		if(event.getInventory().getName().endsWith(ChatColor.AQUA + plugin.getKingdom(p) + "'s nexus")){
 			event.setCancelled(true);
 			if(event.getCurrentItem() != null){
 				if(event.getCurrentItem().getItemMeta() != null){
+					if(event.getCurrentItem().getItemMeta().getDisplayName() != null){
 					if(event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.AQUA + "Kingdom Chest")){
 						
 						openKingdomChest(p);
@@ -88,9 +87,9 @@ public class NexusBlockManager implements Listener{
 							if(item.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.AQUA + "Damage Reduction")){
 								cost = plugin.getConfig().getInt("cost.nexusupgrades.dmg-reduc");
 								max = plugin.getConfig().getInt("max.nexusupgrades.dmg-reduc");
-								if(plugin.hasAmtRp(plugin.getKingdom(p), cost)){
+								if(plugin.rpm.hasAmtRp(plugin.getKingdom(p), cost)){
 									if(plugin.powerups.getInt(plugin.getKingdom(p) + ".dmg-reduction") < max){
-									plugin.minusRP(plugin.getKingdom(p), cost);
+									plugin.rpm.minusRP(plugin.getKingdom(p), cost);
 									upgradePowerup(plugin.getKingdom(p), "dmg-reduction", 1);
 									p.sendMessage(ChatColor.GREEN + "Damage reduction upgraded! Total: " + plugin.powerups.getInt(plugin.getKingdom(p) + ".dmg-reduction"));
 								p.closeInventory();
@@ -106,9 +105,9 @@ public class NexusBlockManager implements Listener{
 							if(item.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.AQUA + "Regeneration Boost")){
 								cost = plugin.getConfig().getInt("cost.nexusupgrades.regen-boost");
 								max = plugin.getConfig().getInt("max.nexusupgrades.regen-boost");
-								if(plugin.hasAmtRp(plugin.getKingdom(p), cost)){
+								if(plugin.rpm.hasAmtRp(plugin.getKingdom(p), cost)){
 									if(plugin.powerups.getInt(plugin.getKingdom(p) + ".regen-boost") < max){
-									plugin.minusRP(plugin.getKingdom(p), cost);
+									plugin.rpm.minusRP(plugin.getKingdom(p), cost);
 									upgradePowerup(plugin.getKingdom(p), "regen-boost", 5);
 									p.sendMessage(ChatColor.GREEN + "Regeneration boost upgraded! Total: " + plugin.powerups.getInt(plugin.getKingdom(p) + ".regen-boost"));
 								p.closeInventory();
@@ -124,9 +123,9 @@ public class NexusBlockManager implements Listener{
 							if(item.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.AQUA + "Damage Boost")){
 								cost = plugin.getConfig().getInt("cost.nexusupgrades.dmg-boost");
 								max = plugin.getConfig().getInt("max.nexusupgrades.dmg-boost");
-								if(plugin.hasAmtRp(plugin.getKingdom(p), cost)){
+								if(plugin.rpm.hasAmtRp(plugin.getKingdom(p), cost)){
 									if(plugin.powerups.getInt(plugin.getKingdom(p) + ".dmg-boost") < max){
-									plugin.minusRP(plugin.getKingdom(p), cost);
+									plugin.rpm.minusRP(plugin.getKingdom(p), cost);
 									upgradePowerup(plugin.getKingdom(p), "dmg-boost", 1);
 									p.sendMessage(ChatColor.GREEN + "Damage boost upgraded! Total: " + plugin.powerups.getInt(plugin.getKingdom(p) + ".dmg-boost"));
 								p.closeInventory();
@@ -140,9 +139,9 @@ public class NexusBlockManager implements Listener{
 							}
 							
 							if(item.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.AQUA + "Increase Kingdom Chest Size")){
-								if(plugin.hasAmtRp(plugin.getKingdom(p), 30)){
+								if(plugin.rpm.hasAmtRp(plugin.getKingdom(p), 30)){
 									if(plugin.kingdoms.getInt(plugin.getKingdom(p) + ".chestsize") < 27){
-									plugin.minusRP(plugin.getKingdom(p), 30);
+									plugin.rpm.minusRP(plugin.getKingdom(p), 30);
 									plugin.kingdoms.set(plugin.getKingdom(p) + ".chestsize", plugin.kingdoms.getInt(plugin.getKingdom(p) + ".chestsize") + 9);
 									plugin.saveKingdoms();
 									p.sendMessage(ChatColor.GREEN + "Chest Size upgraded! Total: " + plugin.kingdoms.getInt(plugin.getKingdom(p) + ".chestsize"));
@@ -188,8 +187,18 @@ public class NexusBlockManager implements Listener{
 								p.sendMessage(ChatColor.RED + "Only kingdom kings and mods can upgrade bonuses");
 								p.closeInventory();
 								}
+						}else if(event.getCurrentItem().getItemMeta().getDisplayName().equals(ChatColor.AQUA + "Turrets")){
+							if(plugin.isMod(plugin.getKingdom(p), p) ||
+									plugin.isKing(p)){
+							event.setCancelled(true);
+							openTurretShop(p);
+							}else{
+								p.sendMessage(ChatColor.RED + "Only kingdom kings and mods can buy turrets");
+								p.closeInventory();
+								}
 						}
 					}
+				}
 				}
 			}
 		}else if(event.getInventory().getName().equals(ChatColor.AQUA + plugin.getKingdom(p) + "'s Champion")){
@@ -204,8 +213,8 @@ public class NexusBlockManager implements Listener{
 			
 			if(item.getItemMeta().getDisplayName().equals(ChatColor.AQUA + "Champion Weapon")){
 				if(getChampionUpgrade(plugin.getKingdom(p), "weapon") < 4){
-				if(plugin.hasAmtRp(plugin.getKingdom(p), 10)){
-					plugin.minusRP(plugin.getKingdom(p), 10);
+				if(plugin.rpm.hasAmtRp(plugin.getKingdom(p), 10)){
+					plugin.rpm.minusRP(plugin.getKingdom(p), 10);
 					upgradeChampion(plugin.getKingdom(p), "weapon", 1);
 					p.sendMessage(ChatColor.GREEN + "Champion Weapon upgraded! Total: " + getChampionUpgrade(plugin.getKingdom(p), "weapon"));
 				p.closeInventory();
@@ -220,8 +229,8 @@ public class NexusBlockManager implements Listener{
 			
 			if(item.getItemMeta().getDisplayName().equals(ChatColor.AQUA + "Champion Resistance")){
 				if(getChampionUpgrade(plugin.getKingdom(p), "resist") < 100){
-				if(plugin.hasAmtRp(plugin.getKingdom(p), 5)){
-					plugin.minusRP(plugin.getKingdom(p), 5);
+				if(plugin.rpm.hasAmtRp(plugin.getKingdom(p), 5)){
+					plugin.rpm.minusRP(plugin.getKingdom(p), 5);
 					upgradeChampion(plugin.getKingdom(p), "resist", 20);
 					p.sendMessage(ChatColor.GREEN + "Champion Resistance upgraded! Total: " + getChampionUpgrade(plugin.getKingdom(p), "resist"));
 				p.closeInventory();
@@ -236,8 +245,8 @@ public class NexusBlockManager implements Listener{
 			
 			if(item.getItemMeta().getDisplayName().equals(ChatColor.AQUA + "Champion Speed")){
 				if(getChampionUpgrade(plugin.getKingdom(p), "speed") < 3){
-				if(plugin.hasAmtRp(plugin.getKingdom(p), 20)){
-					plugin.minusRP(plugin.getKingdom(p), 20);
+				if(plugin.rpm.hasAmtRp(plugin.getKingdom(p), 20)){
+					plugin.rpm.minusRP(plugin.getKingdom(p), 20);
 					upgradeChampion(plugin.getKingdom(p), "speed", 1);
 					p.sendMessage(ChatColor.GREEN + "Champion Speed upgraded! Total: " + getChampionUpgrade(plugin.getKingdom(p), "speed"));
 				p.closeInventory();
@@ -251,8 +260,8 @@ public class NexusBlockManager implements Listener{
 			}
 			
 			if(item.getItemMeta().getDisplayName().equals(ChatColor.AQUA + "Champion Health")){
-				if(plugin.hasAmtRp(plugin.getKingdom(p), 2)){
-					plugin.minusRP(plugin.getKingdom(p), 2);
+				if(plugin.rpm.hasAmtRp(plugin.getKingdom(p), 2)){
+					plugin.rpm.minusRP(plugin.getKingdom(p), 2);
 					upgradeChampion(plugin.getKingdom(p), "health", 2);
 					p.sendMessage(ChatColor.GREEN + "Champion Health upgraded! Total: " + getChampionUpgrade(plugin.getKingdom(p), "health"));
 				p.closeInventory();
@@ -265,8 +274,8 @@ public class NexusBlockManager implements Listener{
 			
 			if(item.getItemMeta().getDisplayName().equals(ChatColor.AQUA + "Drag")){
 				if(plugin.kingdoms.getInt(plugin.getKingdom(p) + ".champion.drag") == 0){
-				if(plugin.hasAmtRp(plugin.getKingdom(p), 30)){
-					plugin.minusRP(plugin.getKingdom(p), 30);
+				if(plugin.rpm.hasAmtRp(plugin.getKingdom(p), 30)){
+					plugin.rpm.minusRP(plugin.getKingdom(p), 30);
 					upgradeChampion(plugin.getKingdom(p), "drag", 1);
 					p.sendMessage(ChatColor.GREEN + "Drag Enabled!");
 				p.closeInventory();
@@ -280,8 +289,8 @@ public class NexusBlockManager implements Listener{
 			}
 			
 			if(item.getItemMeta().getDisplayName().equals(ChatColor.AQUA + "Mock")){
-				if(plugin.hasAmtRp(plugin.getKingdom(p), 10)){
-					plugin.minusRP(plugin.getKingdom(p), 10);
+				if(plugin.rpm.hasAmtRp(plugin.getKingdom(p), 10)){
+					plugin.rpm.minusRP(plugin.getKingdom(p), 10);
 					upgradeChampion(plugin.getKingdom(p), "mock", 1);
 					p.sendMessage(ChatColor.GREEN + "Mock upgraded! Total: " + getChampionUpgrade(plugin.getKingdom(p), "mock"));
 				p.closeInventory();
@@ -294,8 +303,8 @@ public class NexusBlockManager implements Listener{
 			
 			if(item.getItemMeta().getDisplayName().equals(ChatColor.AQUA + "Death Duel")){
 				if(plugin.kingdoms.getInt(plugin.getKingdom(p) + ".champion.duel") == 0){
-				if(plugin.hasAmtRp(plugin.getKingdom(p), 100)){
-					plugin.minusRP(plugin.getKingdom(p), 100);
+				if(plugin.rpm.hasAmtRp(plugin.getKingdom(p), 100)){
+					plugin.rpm.minusRP(plugin.getKingdom(p), 100);
 					upgradeChampion(plugin.getKingdom(p), "duel", 1);
 					p.sendMessage(ChatColor.GREEN + "Death Duel enabled!");
 				p.closeInventory();
@@ -336,9 +345,68 @@ public class NexusBlockManager implements Listener{
 			if(item.getItemMeta().getDisplayName().equals(ChatColor.AQUA + "Bomb Expertise")){
 				this.upgradeMis(p, "bombshards");
 			}
+		}else if(event.getInventory().getName().equals(ChatColor.AQUA + "Turret Shop")){
+			event.setCancelled(true);
+			ItemStack item = event.getCurrentItem();
+			if(item.getItemMeta().getLore().contains(ChatColor.LIGHT_PURPLE + "Turret")){
+			if(item.getItemMeta().getDisplayName().equals(ChatColor.AQUA + "Nexus Turret")){
+				if(plugin.rpm.hasAmtRp(plugin.getKingdom(p), 300)){
+				p.sendMessage(ChatColor.GREEN + "Right click while holding " + ChatColor.AQUA + "Nexus Turret " + ChatColor.GREEN + "to place it");
+				plugin.rpm.minusRP(plugin.getKingdom(p), 300);
+				
+				ItemStack i2 = new ItemStack(Material.RECORD_10);
+				ItemMeta i2m = i2.getItemMeta();
+				i2m.setDisplayName(ChatColor.AQUA + "Nexus Tower");
+				ArrayList<String> i2l = new ArrayList<String>();
+				i2l.add(ChatColor.GREEN + "Zaps all enemies in range with the");
+				i2l.add(ChatColor.GREEN + "power of lightning");
+				i2l.add(ChatColor.RED+ "Can only be placed in the nexus chunk");
+				i2l.add(ChatColor.BLUE + "Range: 5 blocks");
+				i2l.add(ChatColor.BLUE + "Damage: 3 hearts/shot");
+				i2l.add(ChatColor.BLUE + "Attack Speed: 1/sec");
+				i2l.add(ChatColor.BLUE + "Targets: All targets in range");
+				i2l.add(ChatColor.LIGHT_PURPLE + "Turret");
+				i2m.setLore(i2l);
+				i2.setItemMeta(i2m);
+				
+			p.getInventory().addItem(i2);
+			p.updateInventory();
+			}else{
+				p.sendMessage(ChatColor.RED + "You don't have enough resource points for this turret!");
+			}
+				
+			}else if(item.getItemMeta().getDisplayName().equals(ChatColor.AQUA + "Arrow Turret")){
+
+
+				if(plugin.rpm.hasAmtRp(plugin.getKingdom(p), 100)){
+					p.sendMessage(ChatColor.GREEN + "Right click while holding " + ChatColor.AQUA + "Arrow Turret " + ChatColor.GREEN + "to place it");
+					plugin.rpm.minusRP(plugin.getKingdom(p), 100);
+					
+					ItemStack i1 = new ItemStack(Material.RECORD_9);
+					ItemMeta i1m = i1.getItemMeta();
+					i1m.setDisplayName(ChatColor.AQUA + "Arrow Turret");
+					ArrayList<String> i1l = new ArrayList<String>();
+					i1l.add(ChatColor.GREEN + "Rapidly fires at anything other than");
+					i1l.add(ChatColor.GREEN + "kingdom members. One target at a time.");
+					i1l.add(ChatColor.BLUE + "Range: 7 blocks");
+					i1l.add(ChatColor.BLUE + "Damage: 4 hearts/shot");
+					i1l.add(ChatColor.BLUE + "Attack Speed: 1/sec");
+					i1l.add(ChatColor.BLUE + "Targets: One random target in range");
+					i1l.add(ChatColor.LIGHT_PURPLE + "Turret");
+					i1m.setLore(i1l);
+					i1.setItemMeta(i1m);
+					
+				p.getInventory().addItem(i1);
+				p.updateInventory();
+					
+				}else{
+					p.sendMessage(ChatColor.RED + "You don't have enough resource points for this turret!");
+				}
+				
+			
+			}
 		}
-	}catch(NullPointerException e){
-	}
+		}
 	}
 	
 	public int getChampionUpgrade(String kingdom, String powerup){
@@ -359,7 +427,9 @@ public class NexusBlockManager implements Listener{
 	public void onInventoryClose(InventoryCloseEvent event){
 		Player p = (Player) event.getPlayer();
 		if(event.getInventory().getName().equals(ChatColor.DARK_BLUE + "Close inventory to confirm.")){
+			
 			int donatedamt = donateItems(event.getInventory().getContents(), plugin.getKingdom(p),p);
+			
 		((Player) event.getPlayer()).sendMessage(ChatColor.GREEN + "Your kingdom gained " + donatedamt + " resource points");
 		}else if(event.getInventory().getName().startsWith(ChatColor.DARK_BLUE + "Donate to " + ChatColor.DARK_GREEN)){
 			String[] nsplit = event.getInventory().getName().split(" ");
@@ -372,6 +442,9 @@ public class NexusBlockManager implements Listener{
 		}else{
 			((Player) event.getPlayer()).sendMessage(ChatColor.GREEN + kingdom + " has gained 0 resource points.");
 		}
+			
+			
+			
 		}else if(event.getInventory().getName().equals(ChatColor.AQUA + "Kingdom Chest")){
 			ArrayList<ItemStack> kchestcontents = new ArrayList<ItemStack>();
 			for(ItemStack item: event.getInventory().getContents()){
@@ -390,7 +463,9 @@ public class NexusBlockManager implements Listener{
 		for(ItemStack item:items){
 			if(item != null){
 			if(!plugin.blacklistitems.contains(item.getType())){
+				if(!plugin.usewhitelist){
 				int amt = item.getAmount();
+				
 				if(!plugin.specialcaseitems.containsKey(item.getType())){
 				rpdonated = rpdonated + amt;
 				}else{
@@ -398,8 +473,19 @@ public class NexusBlockManager implements Listener{
 					rpdonated = rpdonated + amt;
 				}
 			}else{
+				int amt = item.getAmount();
+				if(!plugin.whitelistitems.containsKey(item.getType())){
+					
+					p.sendMessage(ChatColor.RED + item.getType().name() + " cannot be traded for resource points. Do /k tradable to see allowed trades");
+				    p.getWorld().dropItemNaturally(p.getLocation(), item);
+				}else{
+					amt = amt * plugin.whitelistitems.get(item.getType());
+					rpdonated = rpdonated + amt;
+				}
+			}
+			}else{
 				if(p != null){
-					p.sendMessage(ChatColor.RED + item.getType().name() + " cannot be traded for resource points.");
+					p.sendMessage(ChatColor.RED + item.getType().name() + " cannot be traded for resource points. Do /k tradable to see allowed trades");
 				    p.getWorld().dropItemNaturally(p.getLocation(), item);
 				}
 			}
@@ -408,7 +494,7 @@ public class NexusBlockManager implements Listener{
 		float i = rpdonated/rpi;
 		String newint = Float.toString(i);
 		String[] split = newint.split("\\.");
-		plugin.addRP(kingdom, Integer.parseInt(split[0]));
+		plugin.rpm.addRP(kingdom, Integer.parseInt(split[0]));
 		plugin.saveKingdoms();
 		return Integer.parseInt(split[0]);
 		
@@ -486,7 +572,7 @@ public class NexusBlockManager implements Listener{
 		ItemMeta i7m = i7.getItemMeta();
 		i7m.setDisplayName(ChatColor.AQUA + "Increase Kingdom Chest Size");
 		ArrayList<String> i7l = new ArrayList<String>();
-		i7l.add(ChatColor.RED + "Current Chest Size: " + plugin.powerups.getInt(plugin.getKingdom(p) + ".chestsize")  + " slots");
+		i7l.add(ChatColor.RED + "Current Chest Size: " + plugin.kingdoms.getInt(plugin.getKingdom(p) + ".chestsize")  + " slots");
 		i7l.add(ChatColor.GREEN + "Allows more loot for the champion to capture with");
 		i7l.add(ChatColor.GREEN + "the loot champion upgrade, and increases the kingdom");
 		i7l.add(ChatColor.GREEN + "chest size.");
@@ -494,6 +580,15 @@ public class NexusBlockManager implements Listener{
 		i7l.add(ChatColor.LIGHT_PURPLE + "Nexus Upgrade");
 		i7m.setLore(i7l);
 		i7.setItemMeta(i7m);
+		
+		ItemStack i8 = new ItemStack(Material.DISPENSER);
+		ItemMeta i8m = i8.getItemMeta();
+		i8m.setDisplayName(ChatColor.AQUA + "Turrets");
+		ArrayList<String> i8l = new ArrayList<String>();
+		i8l.add(ChatColor.LIGHT_PURPLE + "Click to open turrets shop. Build");
+		i8l.add(ChatColor.LIGHT_PURPLE + "turrets with resource points");
+		i8m.setLore(i8l);
+		i8.setItemMeta(i8m);
 		
 		ItemStack chest = new ItemStack(Material.CHEST);
 		ItemMeta chestm = chest.getItemMeta();
@@ -509,7 +604,7 @@ public class NexusBlockManager implements Listener{
 		rm.setDisplayName(ChatColor.AQUA + "Resource Points");
 		ArrayList<String> rl = new ArrayList<String>();
 		rl.add(ChatColor.GREEN + "Your kingdom currently has");
-		rl.add(ChatColor.DARK_AQUA + "" + plugin.getRp(plugin.getKingdom(p)) + ChatColor.GREEN + " Resource Points");
+		rl.add(ChatColor.DARK_AQUA + "" + plugin.rpm.getRp(plugin.getKingdom(p)) + ChatColor.GREEN + " Resource Points");
 		rm.setLore(rl);
 		r.setItemMeta(rm);
 		
@@ -519,6 +614,7 @@ public class NexusBlockManager implements Listener{
 		nexusgui.setItem(10, i3);
 		nexusgui.setItem(11, i4);
 		nexusgui.setItem(12, i7);
+		nexusgui.setItem(20, i8);
 		nexusgui.setItem(18, i5);
 		nexusgui.setItem(19, i6);
 		
@@ -526,6 +622,60 @@ public class NexusBlockManager implements Listener{
 		nexusgui.setItem(26, chest);
 		
 		p.openInventory(nexusgui);
+	}
+	
+	public void openTurretShop(Player p){
+		champions = Bukkit.createInventory(null, 27, ChatColor.AQUA + "Turret Shop");
+		
+		ItemStack i1 = new ItemStack(Material.BOW);
+		ItemMeta i1m = i1.getItemMeta();
+		i1m.setDisplayName(ChatColor.AQUA + "Arrow Turret");
+		ArrayList<String> i1l = new ArrayList<String>();
+		i1l.add(ChatColor.GREEN + "Rapidly fires at anything other than");
+		i1l.add(ChatColor.GREEN + "kingdom members. One target at a time.");
+		i1l.add(ChatColor.BLUE + "Range: 7 blocks");
+		i1l.add(ChatColor.BLUE + "Damage: 4 hearts/shot");
+		i1l.add(ChatColor.BLUE + "Attack Speed: 1/sec");
+		i1l.add(ChatColor.BLUE + "Targets: One random target in range");
+		i1l.add(ChatColor.RED + "Cost: 100 resource points");
+		i1l.add(ChatColor.LIGHT_PURPLE + "Turret");
+		i1m.setLore(i1l);
+		i1.setItemMeta(i1m);
+		
+		ItemStack i2 = new ItemStack(Material.BEACON);
+		ItemMeta i2m = i2.getItemMeta();
+		i2m.setDisplayName(ChatColor.AQUA + "Nexus Tower");
+		ArrayList<String> i2l = new ArrayList<String>();
+		i2l.add(ChatColor.GREEN + "Zaps all enemies in range with the");
+		i2l.add(ChatColor.GREEN + "power of lightning");
+		i2l.add(ChatColor.RED+ "Can only be placed in the nexus chunk");
+		i2l.add(ChatColor.BLUE + "Range: 5 blocks");
+		i2l.add(ChatColor.BLUE + "Damage: 3 hearts/shot");
+		i2l.add(ChatColor.BLUE + "Attack Speed: 1/sec");
+		i2l.add(ChatColor.BLUE + "Targets: All targets in range");
+		i2l.add(ChatColor.RED + "Cost: 300 resource points");
+		i2l.add(ChatColor.LIGHT_PURPLE + "Turret");
+		i2m.setLore(i2l);
+		i2.setItemMeta(i2m);
+		
+		ItemStack i3 = new ItemStack(Material.LAVA_BUCKET);
+		ItemMeta i3m = i3.getItemMeta();
+		i3m.setDisplayName(ChatColor.AQUA + "Lava Tower");
+		ArrayList<String> i3l = new ArrayList<String>();
+		i3l.add(ChatColor.GREEN + "Zaps all enemies in range with the");
+		i3l.add(ChatColor.GREEN + "power of lightning");
+		i3l.add(ChatColor.BLUE + "Range: 5 blocks");
+		i3l.add(ChatColor.BLUE + "Damage: 3 hearts/shot");
+		i3l.add(ChatColor.BLUE + "Attack Speed: 1/sec");
+		i3l.add(ChatColor.BLUE + "Targets: All targets in range");
+		i3l.add(ChatColor.RED + "Cost: 300 resource points");
+		i3l.add(ChatColor.LIGHT_PURPLE + "Turret");
+		i3m.setLore(i3l);
+		i3.setItemMeta(i3m);
+		
+		champions.addItem(i1);
+		//champions.addItem(i2);
+		p.openInventory(champions);
 	}
 	
 	
@@ -625,7 +775,7 @@ public class NexusBlockManager implements Listener{
 		rm.setDisplayName(ChatColor.AQUA + "Resource Points");
 		ArrayList<String> rl = new ArrayList<String>();
 		rl.add(ChatColor.GREEN + "Your kingdom currently has");
-		rl.add(ChatColor.DARK_AQUA + "" + plugin.getRp(plugin.getKingdom(p)) + ChatColor.GREEN + " Resource Points");
+		rl.add(ChatColor.DARK_AQUA + "" + plugin.rpm.getRp(plugin.getKingdom(p)) + ChatColor.GREEN + " Resource Points");
 		rm.setLore(rl);
 		r.setItemMeta(rm);
 		
@@ -737,7 +887,7 @@ public class NexusBlockManager implements Listener{
 		rm.setDisplayName(ChatColor.AQUA + "Resource Points");
 		ArrayList<String> rl = new ArrayList<String>();
 		rl.add(ChatColor.GREEN + "Your kingdom currently has");
-		rl.add(ChatColor.DARK_AQUA + "" + plugin.getRp(plugin.getKingdom(p)) + ChatColor.GREEN + " Resource Points");
+		rl.add(ChatColor.DARK_AQUA + "" + plugin.rpm.getRp(plugin.getKingdom(p)) + ChatColor.GREEN + " Resource Points");
 		rm.setLore(rl);
 		r.setItemMeta(rm);
 		
@@ -771,8 +921,8 @@ public class NexusBlockManager implements Listener{
 			if(!hasMisUpgrade(kingdom, upgrade)){
 		if(upgrade.equalsIgnoreCase("anticreeper")){
 			cost = 50;
-			if(plugin.hasAmtRp(kingdom, cost)){
-				plugin.minusRP(kingdom, cost);
+			if(plugin.rpm.hasAmtRp(kingdom, cost)){
+				plugin.rpm.minusRP(kingdom, cost);
 				plugin.misupgrades.set(kingdom + "." + upgrade, true);
 				plugin.saveMisupgrades();
 				p.sendMessage(ChatColor.GREEN + "Anti-Creeper upgrade acquired!");
@@ -783,8 +933,8 @@ public class NexusBlockManager implements Listener{
 			}
 		}else if(upgrade.equalsIgnoreCase("antitrample")){
 			cost = 10;
-			if(plugin.hasAmtRp(kingdom, cost)){
-				plugin.minusRP(kingdom, cost);
+			if(plugin.rpm.hasAmtRp(kingdom, cost)){
+				plugin.rpm.minusRP(kingdom, cost);
 				plugin.misupgrades.set(kingdom + "." + upgrade, true);
 				plugin.saveMisupgrades();
 				p.sendMessage(ChatColor.GREEN + "Anti-Trample upgrade acquired!");
@@ -795,8 +945,8 @@ public class NexusBlockManager implements Listener{
 			}
 		}else if(upgrade.equalsIgnoreCase("nexusguard")){
 			cost = 100;
-			if(plugin.hasAmtRp(kingdom, cost)){
-				plugin.minusRP(kingdom, cost);
+			if(plugin.rpm.hasAmtRp(kingdom, cost)){
+				plugin.rpm.minusRP(kingdom, cost);
 				plugin.misupgrades.set(kingdom + "." + upgrade, true);
 				plugin.saveMisupgrades();
 				p.sendMessage(ChatColor.GREEN + "Nexus Guard upgrade acquired!");
@@ -807,8 +957,8 @@ public class NexusBlockManager implements Listener{
 			}
 		}else if(upgrade.equalsIgnoreCase("glory")){
 			cost = 60;
-			if(plugin.hasAmtRp(kingdom, cost)){
-				plugin.minusRP(kingdom, cost);
+			if(plugin.rpm.hasAmtRp(kingdom, cost)){
+				plugin.rpm.minusRP(kingdom, cost);
 				plugin.misupgrades.set(kingdom + "." + upgrade, true);
 				plugin.saveMisupgrades();
 				p.sendMessage(ChatColor.GREEN + "Glory upgrade acquired!");
@@ -819,8 +969,8 @@ public class NexusBlockManager implements Listener{
 			}
 		}else if(upgrade.equalsIgnoreCase("bombshards")){
 			cost = 100;
-			if(plugin.hasAmtRp(kingdom, cost)){
-				plugin.minusRP(kingdom, cost);
+			if(plugin.rpm.hasAmtRp(kingdom, cost)){
+				plugin.rpm.minusRP(kingdom, cost);
 				plugin.misupgrades.set(kingdom + "." + upgrade, true);
 				plugin.saveMisupgrades();
 				p.sendMessage(ChatColor.GREEN + "Bomb Expertise upgrade acquired!");
@@ -843,14 +993,19 @@ public class NexusBlockManager implements Listener{
 	public void openKingdomChest(Player p){
 		if(plugin.hasKingdom(p)){
 			int chestlevel = plugin.kingdoms.getInt(plugin.getKingdom(p) + ".chestsize");
-			this.nexusgui = Bukkit.createInventory(null, chestlevel, ChatColor.AQUA + "Kingdom Chest");
+			this.kchest = Bukkit.createInventory(null, chestlevel, ChatColor.AQUA + "Kingdom Chest");
+			if(plugin.chest.getList(plugin.getKingdom(p)) == null){
+				plugin.chest.set(plugin.getKingdom(p), new ArrayList<String>());
+				plugin.saveChests();
+			}
 			for(Object obj : plugin.chest.getList(plugin.getKingdom(p))){
 				if(obj instanceof ItemStack){
-					nexusgui.addItem((ItemStack) obj);
+					kchest.addItem((ItemStack) obj);
 				}
 			}
+			
 			p.closeInventory();
-			p.openInventory(nexusgui);
+			p.openInventory(kchest);
 			
 		}
 	}
