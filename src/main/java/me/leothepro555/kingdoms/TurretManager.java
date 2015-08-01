@@ -43,74 +43,85 @@ public class TurretManager implements Listener{
 				if(event.getPlayer().getItemInHand().getItemMeta() != null){
 					if(event.getPlayer().getItemInHand().getItemMeta().getDisplayName() != null){
 						if(event.getPlayer().getItemInHand().getItemMeta().getDisplayName().equals(ChatColor.AQUA + "Arrow Turret")){
-			        if(event.getBlockFace() == BlockFace.UP &&
-			        		event.getClickedBlock().getType() == Material.FENCE){
-			        	if(plugin.getChunkKingdom(p.getLocation().getChunk()) != null){
-			        		if(plugin.hasKingdom(p)){
-			        		if(plugin.getChunkKingdom(p.getLocation().getChunk()).equals(plugin.getKingdom(p))){
-				        		p.setItemInHand(null);
-			        			final Block turret = event.getClickedBlock().getRelative(0, 1, 0);
-			        			turret.setType(Material.SKULL);
-			        			turret.setData((byte) 1);
-			        			plugin.turrets.set(locationToString(turret.getLocation()), plugin.getKingdom(p));
-			        			plugin.saveTurrets();
-			        			 new BukkitRunnable(){
-			        				 @Override
-			        			  public void run(){
-			        					 if(plugin.turrets.getString(locationToString(turret.getLocation())) != null){
-			        					for(Entity e:getNearbyEntities(turret.getLocation(), 7)){
-			        						Location origin = turret.getRelative(0, 1, 0).getLocation();
-			        							if(e instanceof LivingEntity){
-			        								if(e instanceof Player){
-			        									if(((Player) e).getGameMode() == GameMode.SURVIVAL||
-			        											((Player) e).getGameMode() == GameMode.ADVENTURE){
-			        									if(!plugin.turrets.getString(locationToString(turret.getLocation())).equals(plugin.getKingdom((Player)e))){
-			        										fireArrow(origin, e);
-			        										break;
-			        									}
-			        									}
-			        								}else if(e instanceof Wolf){
-			        									if(((Wolf) e).isTamed()){
-			        										Player owner = (Player) ((Wolf) e).getOwner();
-			        										if(!plugin.turrets.getString(locationToString(turret.getLocation())).equals(plugin.getKingdom(owner))){
-			        											fireArrow(origin, e);
-			        											break;
-			        										}
-			        									}else{
-			        										fireArrow(origin, e);
-			        										break;
-			        									}
-			        								}else if(!plugin.champions.containsKey(e.getUniqueId())){
-			        									fireArrow(origin, e);
-			        									break;
-			        								}
-			        							}
-			        						}
-			        				 }else{
-			        					 this.cancel();
-			        				 }
-			        					 
-	    						   }
-	    						    
-	    						   }.runTaskTimer(plugin, 0L, 20L);
-	    						   
-				        	}else{
-					        	p.sendMessage(ChatColor.RED + "You can only place turrets in your lands");
-					        }
-			        	}else{
-				        	p.sendMessage(ChatColor.RED + "You need to be in a kingdom to place turrets");
-				        }
-			        	}else{
-				        	p.sendMessage(ChatColor.RED + "You can only place turrets in your land");
-				        }
+			        if(event.getBlockFace() == BlockFace.UP && 
+			            (  event.getClickedBlock().getType() == Material.FENCE
+	                    || event.getClickedBlock().getType() == Material.ACACIA_FENCE
+                        || event.getClickedBlock().getType() == Material.BIRCH_FENCE 
+                        || event.getClickedBlock().getType() == Material.DARK_OAK_FENCE 
+                        || event.getClickedBlock().getType() == Material.JUNGLE_FENCE 
+                        || event.getClickedBlock().getType() == Material.NETHER_FENCE 
+                        || event.getClickedBlock().getType() == Material.SPRUCE_FENCE 
+			            )) {
+			            
+			        	    if(plugin.getChunkKingdom(p.getLocation().getChunk()) != null){
+    			        		if(plugin.hasKingdom(p)){
+    			        		if(plugin.getChunkKingdom(p.getLocation().getChunk()).equals(plugin.getKingdom(p))){
+    				        		p.setItemInHand(null);
+    			        			final Block turret = event.getClickedBlock().getRelative(0, 1, 0);
+    			        			turret.setType(Material.SKULL);
+    			        			turret.setData((byte) 1);
+    			        			plugin.turrets.set(locationToString(turret.getLocation()), plugin.getKingdom(p));
+    			        			plugin.saveTurrets();
+    			        			 new BukkitRunnable(){
+    			        				 @Override
+    			        			  public void run(){
+    			        					 if(plugin.turrets.getString(locationToString(turret.getLocation())) != null){
+    			        					for(Entity e:getNearbyEntities(turret.getLocation(), 7)){
+    			        						Location origin = turret.getRelative(0, 1, 0).getLocation();
+    			        							if(e instanceof LivingEntity){
+    			        								if(e instanceof Player){
+    			        									if(((Player) e).getGameMode() == GameMode.SURVIVAL||
+    			        											((Player) e).getGameMode() == GameMode.ADVENTURE){
+    			        									if(!plugin.turrets.getString(locationToString(turret.getLocation())).equals(plugin.getKingdom((Player)e))){
+    			        										fireArrow(origin, e);
+    			        										break;
+    			        									}
+    			        									}
+    			        								}else if(e instanceof Wolf){
+    			        									if(((Wolf) e).isTamed()){
+    			        										Player owner = (Player) ((Wolf) e).getOwner();
+    			        										if(!plugin.turrets.getString(locationToString(turret.getLocation())).equals(plugin.getKingdom(owner))){
+    			        											fireArrow(origin, e);
+    			        											break;
+    			        										}
+    			        									}else{
+    			        										fireArrow(origin, e);
+    			        										break;
+    			        									}
+    			        								}else if(!plugin.champions.containsKey(e.getUniqueId())){
+    			        									fireArrow(origin, e);
+    			        									break;
+    			        								}
+    			        							}
+    			        						}
+    			        				 }else{
+    			        					 this.cancel();
+    			        				 }
+    			        					 
+    	    						   }
+    	    						    
+    	    						   }.runTaskTimer(plugin, 0L, 20L);
+    	    						   
+    				        	}else{
+    					        	p.sendMessage(ChatColor.RED + "You can only place turrets in your lands");
+    					        }
+    			        	}else{
+    				        	p.sendMessage(ChatColor.RED + "You need to be in a kingdom to place turrets");
+    				        }
+    			        	}else{
+    				        	p.sendMessage(ChatColor.RED + "You can only place turrets in your land");
+    				        }
 			        	
 			        }else{
 			        	p.sendMessage(ChatColor.RED + "You can only place turrets on top of fences.");
+
+// WTF WHAT IS THIS S**T, we need to do some format cleaning here xD
+
 			        }
-			       }
 					}
+				}
 			}
-		}
+			}
 		}
 	}
 	
