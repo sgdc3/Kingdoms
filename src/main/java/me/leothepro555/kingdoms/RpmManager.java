@@ -1,4 +1,4 @@
-package me.leothepro555.kingdoms.main;
+package me.leothepro555.kingdoms;
 
 public class RpmManager{
 	

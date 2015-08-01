@@ -1,4 +1,4 @@
-package me.leothepro555.kingdoms.main;
+package me.leothepro555.kingdoms;
 
 import java.io.File;
 import java.io.IOException;
@@ -1558,7 +1558,6 @@ public class Kingdoms extends JavaPlugin implements Listener{
 		
 	}
 	
-	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onEntityAttack(EntityDamageByEntityEvent event){
 		if(isValidWorld(event.getEntity().getWorld())){
@@ -2332,8 +2331,6 @@ public class Kingdoms extends JavaPlugin implements Listener{
 		String com2 = "";
 		String com3 = "";
 		String[] row = {"", "", "", "", "", ""};
-
-		ArrayList<String> compass = AsciiCompass.getAsciiCompass(AsciiCompass.getCardinalDirection(p), ChatColor.AQUA, ChatColor.GRAY + "");
 		
 		com1 = "\\W/";
 		com2 = "N+S";

@@ -1,4 +1,4 @@
-package me.leothepro555.kingdoms.main;
+package me.leothepro555.kingdoms;
 
 import java.util.ArrayList;
 import org.bukkit.Bukkit;
@@ -78,7 +78,6 @@ public class NexusBlockManager implements Listener{
 							int max = 1;
 							event.setCancelled(true);
 							ItemStack item = event.getCurrentItem();
-							int rp = plugin.kingdoms.getInt(plugin.getKingdom(p) + ".resourcepoints");
 							if(plugin.isMod(plugin.getKingdom(p), p) ||
 									plugin.isKing(p)){
 								
