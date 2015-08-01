@@ -17,31 +17,23 @@ public class PlayerJoinKingdomEvent extends Event{
 		this.before = before;
 	}
 	
-	 public HandlerList getHandlers() {
-	        return handlers;
-	    }
-	 
-	    public static HandlerList getHandlerList() {
-	        return handlers;
-	    }
+	public HandlerList getHandlers() {
+        return handlers;
+    }
+ 
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
 
-		public OfflinePlayer getPlayer() {
-			return p;
-		}
+	public OfflinePlayer getPlayer() {
+		return p;
+	}
 
-		public String getKingdom() {
-			return kingdom;
-		}
+	public String getKingdom() {
+		return kingdom;
+	}
 
-		public String getBefore() {
-			return before;
-		}
-
-
-
-	    
-	    
-	    
-	    
-	
+	public String getBefore() {
+		return before;
+	}
 }
