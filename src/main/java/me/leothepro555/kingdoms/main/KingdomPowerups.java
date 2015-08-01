@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.Hopper;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
@@ -93,14 +94,27 @@ public class KingdomPowerups implements Listener{
 					if(hasMisUpgrade(plugin.getChunkKingdom(b.getChunk()), "bombshards")){
 						final Material mat = b.getType();
 						final byte data = b.getData();
-						
+						if(b.getState() instanceof Hopper){
+							
+						}else{
+						if(mat != Material.CHEST&&
+								mat != Material.DISPENSER&&
+								mat != Material.DROPPER&&
+								mat != Material.DIAMOND_BLOCK&&
+								mat != Material.IRON_BLOCK&&
+								mat != Material.GOLD_BLOCK&&
+								mat != Material.EMERALD_BLOCK){
+							b.setType(Material.AIR);
 						Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 							  
 							public void run() {
 							   b.setType(mat);
 							   b.setData(data);
 							   }
-							}, randInt(200,400));
+							}, randInt(2000,4000));
+						
+					}
+					}
 					}
 					if(plugin.getChunkKingdom(b.getChunk()) != null){
 					String kingdom = plugin.getChunkKingdom(b.getChunk());

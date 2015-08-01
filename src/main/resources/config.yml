@@ -29,6 +29,19 @@ special-item-cases:
 - EMERALD,50
 - DIAMOND,50
 
+#If this is true, the whitelist will be enabled, and only the whitelist items can be traded for resource points.
+use-whitelist: false
+
+#Items in here are the ONLY things that can be traded for resource points.
+#To use whitelist, enable use-whitelist above.
+whitelist-items:
+- IRON_INGOT,1
+- GOLD_INGOT,1
+- EMERALD,1
+- DIAMOND,2
+
+
+
 #Land limit per member. Amount of land a kingdom can have for each member they have. (Including king)
 land-per-member: 5
 
@@ -56,3 +69,5 @@ max:
        dmg-reduc: 50
        regen-boost: 100
 
+#The max number of characters in a kingdom's name. 0 is no limit.
+kingdom-char-tag-limit: 30
