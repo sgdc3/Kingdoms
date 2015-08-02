@@ -22,7 +22,10 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
@@ -270,6 +273,7 @@ public class Kingdoms extends BukkitPlugin implements Listener {
 
   @Override
   public void setupListeners() {
+    new ChatListener().register();
     new KingdomPowerups().register();
     new NexusBlockManager().register();
     new PlayerListener().register();
@@ -1890,23 +1894,6 @@ public class Kingdoms extends BukkitPlugin implements Listener {
   public void messageKingdomPlayers(String kingdom, String message) {
     for (Player p : getKingdomOnlineMembers(kingdom)) {
       p.sendMessage(message);
-    }
-  }
-
-  @EventHandler
-  public void onPlayerChat(AsyncPlayerChatEvent event) {
-    Player p = event.getPlayer();
-    if (getChatOption(p).equals("kingdom")) {
-      event.setCancelled(true);
-      this.messageKingdomPlayers(getKingdom(p), ChatColor.GREEN + "[" + p.getName() + "]: " + event.getMessage());
-    } else if (getChatOption(p).equals("ally")) {
-      event.setCancelled(true);
-      this.messageKingdomPlayers(getKingdom(p), ChatColor.LIGHT_PURPLE + "[" + getKingdom(p) + "][" + p
-              .getName() + "]: " + event.getMessage());
-      for (String ally : getAllies(getKingdom(p))) {
-        messageKingdomPlayers(ally, ChatColor.LIGHT_PURPLE + "[" + getKingdom(p) + "][" + p.getName() + "]: " + event
-                .getMessage());
-      }
     }
   }
 
