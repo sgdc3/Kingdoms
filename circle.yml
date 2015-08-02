@@ -1,9 +1,9 @@
 machine:
   java:
-    version: oraclejdk8
+    version: oraclejdk7
 general:
   artifacts:
     - "target/*.jar"
 test:
   override:
-    - mvn install
+    - mvn clean install -B
