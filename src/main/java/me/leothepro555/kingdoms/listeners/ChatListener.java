@@ -9,7 +9,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 public class ChatListener extends Listeners<Kingdoms> {
 
-  @EventHandler
+  @EventHandler(ignoreCancelled = true)
   public void onPlayerChat(AsyncPlayerChatEvent event) {
     Player p = event.getPlayer();
     if (plugin.getChatOption(p).equals("kingdom")) {
