@@ -1,7 +1,8 @@
-package me.leothepro555.kingdoms;
+package me.leothepro555.kingdoms.listeners;
 
 import java.util.Random;
 
+import me.leothepro555.kingdoms.Kingdoms;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
