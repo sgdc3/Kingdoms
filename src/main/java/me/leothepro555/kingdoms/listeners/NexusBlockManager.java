@@ -2,6 +2,7 @@ package me.leothepro555.kingdoms.listeners;
 
 import me.confuser.bukkitutil.listeners.Listeners;
 import me.leothepro555.kingdoms.Kingdoms;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -61,6 +62,7 @@ public class NexusBlockManager extends Listeners<Kingdoms> {
     }
   }
 
+  @SuppressWarnings("deprecation")
   @EventHandler
   public void onInventoryMove(InventoryClickEvent event) {
     Player p = (Player) event.getWhoClicked();

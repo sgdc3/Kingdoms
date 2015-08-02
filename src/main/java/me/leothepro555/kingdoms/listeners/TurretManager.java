@@ -2,6 +2,7 @@ package me.leothepro555.kingdoms.listeners;
 
 import me.confuser.bukkitutil.listeners.Listeners;
 import me.leothepro555.kingdoms.Kingdoms;
+
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -20,6 +21,7 @@ import java.util.List;
 
 public class TurretManager extends Listeners<Kingdoms> {
 
+  @SuppressWarnings("deprecation")
   @EventHandler
   public void onPlayerInteract(PlayerInteractEvent event) {
     final Player p = event.getPlayer();
