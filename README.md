@@ -1,7 +1,5 @@
 <b><i><span style="font-size: 26px">The github repository of Kingdoms (Minecraft/Bukkit plugin)</span></i></b><br>
 
-Dev builds: [![Circle CI](https://circleci.com/gh/sgdc3/Kingdoms.svg?style=svg)](https://circleci.com/gh/sgdc3/Kingdoms)
-
 Kingdoms is a bukkit/spigot 1.8 plugin similar to factions, but with some different features. For now, I would accept bug fixing/lag reduction pull requests, along with feature requests that seem promising/essential.
 Kingdoms is a beta version currently.
 For now, I would accept bug fixing/lag reduction pull requests, along with feature requests that seem promising/essential.  
